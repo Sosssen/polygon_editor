@@ -31,7 +31,7 @@ namespace polygon_editor
             {
                 for(int j = 100; j < 250; j++)
                 {
-                    drawArea.SetPixel(i, j, Color.Red);
+                    drawArea.SetPixel(i, j, Color.Green);
                 }
             }
 
