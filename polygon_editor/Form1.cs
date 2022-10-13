@@ -14,17 +14,18 @@ namespace polygon_editor
     public partial class polygon_editor : Form
     {
         private Bitmap drawArea;
-        private Pen pen;
+        private Pen pen = new Pen(Color.Black, 3);
+        private SolidBrush sb = new SolidBrush(Color.Black);
 
         private List<Point> points = new List<Point>();
         private List<List<Point>> polygons = new List<List<Point>>();
+
+        private int radius = 8;
         public polygon_editor()
         {
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
             this.MaximizeBox = false;
-
-            Debug.WriteLine("chuj");
 
             InitializeComponent();
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
@@ -33,26 +34,6 @@ namespace polygon_editor
             using (Graphics g = Graphics.FromImage(drawArea))
             {
                 g.Clear(Color.White);
-            }
-
-            pen = new Pen(Brushes.Black, 3);
-
-            for(int i = 100; i < 250; i++)
-            {
-                for(int j = 100; j < 250; j++)
-                {
-                    drawArea.SetPixel(i, j, Color.Blue);
-                }
-            }
-
-            Point p1 = new Point(100, 100);
-            Point p2 = new Point(150, 100);
-            Point p3 = new Point(200, 300);
-            Point p4 = new Point(400, 400);
-            Point[] temp = { p1, p2, p3, p4 };
-            using (Graphics g = Graphics.FromImage(drawArea))
-            {
-                g.DrawPolygon(pen, temp);
             }
         }
 
@@ -93,7 +74,7 @@ namespace polygon_editor
         {
             foreach(var point in points)
             {
-                if (Math.Sqrt((p.X - point.X) * (p.X - point.X) + (p.Y - point.Y) * (p.Y - point.Y)) <= 10) return (true, point);
+                if ((p.X - point.X) * (p.X - point.X) + (p.Y - point.Y) * (p.Y - point.Y) <= radius * radius) return (true, point);
             }
             return (false, new Point());
         }
@@ -112,6 +93,13 @@ namespace polygon_editor
             {
                 foreach (var polygon in polygons)
                 {
+
+                    foreach(var point in polygon)
+                    {
+                        g.DrawEllipse(pen, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
+                        g.FillEllipse(sb, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
+                    }
+
                     Point[] arr = polygon.ToArray();
 
                     g.DrawPolygon(pen, arr);
@@ -122,6 +110,11 @@ namespace polygon_editor
                 for(int i = 0; i < points.Count - 1; i++)
                 {
                     g.DrawLine(pen, points[i], points[i + 1]);
+                }
+                for(int i = 0; i < points.Count; i++)
+                {
+                    g.DrawEllipse(pen, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
+                    g.FillEllipse(sb, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
                 }
             }
         }
