@@ -52,7 +52,7 @@ namespace polygon_editor
                 if (e.Button == MouseButtons.Left)
                 {
                     Point p = new Point(e.X, e.Y);
-                    var result = FindPoint(points, p);
+                    var result = FindPointInPoints(points, p);
                     if (result.Item1)
                     {
                         if (result.Item2 == points[0])
@@ -83,23 +83,52 @@ namespace polygon_editor
                     DrawCanvas();
                 }
             }
-            else if(chosenButton == 2)
+            // TODO: what to do if polygon was not finished
+            else if (chosenButton == 2)
             {
-                if(e.Button == MouseButtons.Left)
+                if (e.Button == MouseButtons.Left)
                 {
 
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    // TODO: name result items for readability?
+                    var result = FindPointInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        result.Item2.Remove(result.Item3);
+
+                        if (result.Item2.Count < 3)
+                        {
+                            polygons.Remove(result.Item2);
+                        }
+                    }
+
+                    DrawCanvas();
                 }
             }
 
         }
 
-        private (bool, Point) FindPoint(List<Point> points, Point p)
+        private (bool, Point) FindPointInPoints(List<Point> points, Point p)
         {
             foreach(var point in points)
             {
                 if ((p.X - point.X) * (p.X - point.X) + (p.Y - point.Y) * (p.Y - point.Y) <= radius * radius) return (true, point);
             }
             return (false, new Point());
+        }
+
+        private (bool, List<Point>, Point) FindPointInPolygons(int x, int y)
+        {
+            foreach(var polygon in polygons)
+            {
+                foreach(var point in polygon)
+                {
+                    if ((point.X - x) * (point.X - x) + (point.Y - y) * (point.Y - y) <= radius * radius) return (true, polygon, point);
+                }
+            }
+            return (false, null, new Point());
         }
 
         void DrawCanvas()
