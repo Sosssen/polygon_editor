@@ -61,6 +61,8 @@ namespace polygon_editor
             this.Canvas.Size = new System.Drawing.Size(1173, 925);
             this.Canvas.TabIndex = 0;
             this.Canvas.TabStop = false;
+            this.Canvas.Click += new System.EventHandler(this.Canvas_Click);
+            this.Canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
             // 
             // polygon_editor
             // 
