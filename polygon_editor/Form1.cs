@@ -37,11 +37,6 @@ namespace polygon_editor
             }
         }
 
-        private void Canvas_Click(object sender, EventArgs e)
-        {
-            // Point p = new Point()
-        }
-
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
             Point p = new Point(e.X, e.Y);
@@ -50,8 +45,15 @@ namespace polygon_editor
             {
                 if(result.Item2 == points[0])
                 {
-                    polygons.Add(points);
-                    points = new List<Point>();
+                    if (points.Count <= 2)
+                    {
+                        MessageBox.Show("co najmniej 3 wierzcholki", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        polygons.Add(points);
+                        points = new List<Point>();
+                    }
                 }
                 else
                 {
