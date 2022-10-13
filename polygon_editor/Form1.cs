@@ -17,17 +17,25 @@ namespace polygon_editor
         private Pen pen = new Pen(Color.Black, 3);
         private SolidBrush sb = new SolidBrush(Color.Black);
 
+        private int chosenButton;
+
         private List<Point> points = new List<Point>();
         private List<List<Point>> polygons = new List<List<Point>>();
 
-        private int radius = 8;
+        private const int radius = 8;
         public polygon_editor()
         {
+            InitializeComponent();
+
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
-            InitializeComponent();
+
+            CREATE.BackColor = Color.LightBlue;
+            MODIFY.BackColor = SystemColors.Control;
+            chosenButton = 1;
+
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
             Canvas.Image = drawArea;
             
@@ -39,36 +47,49 @@ namespace polygon_editor
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
-            Point p = new Point(e.X, e.Y);
-            var result = FindPoint(points, p);
-            if (result.Item1)
+            if (chosenButton == 1)
             {
-                if(result.Item2 == points[0])
+                if (e.Button == MouseButtons.Left)
                 {
-                    if (points.Count <= 2)
+                    Point p = new Point(e.X, e.Y);
+                    var result = FindPoint(points, p);
+                    if (result.Item1)
                     {
-                        MessageBox.Show("co najmniej 3 wierzcholki", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (result.Item2 == points[0])
+                        {
+                            if (points.Count <= 2)
+                            {
+                                MessageBox.Show("co najmniej 3 wierzcholki", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                            {
+                                polygons.Add(points);
+                                points = new List<Point>();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("text", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                     else
                     {
-                        polygons.Add(points);
-                        points = new List<Point>();
+                        points.Add(p);
                     }
-                }
-                else
-                {
-                    MessageBox.Show("text", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
+                    System.Diagnostics.Debug.WriteLine($"polygons = {polygons.Count}");
+
+                    DrawCanvas();
                 }
             }
-            else
+            else if(chosenButton == 2)
             {
-                points.Add(p);
+                if(e.Button == MouseButtons.Left)
+                {
+
+                }
             }
-
-            System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
-            System.Diagnostics.Debug.WriteLine($"polygons = {polygons.Count}");
-
-            DrawCanvas();
 
         }
 
@@ -119,6 +140,20 @@ namespace polygon_editor
                     g.FillEllipse(sb, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
                 }
             }
+        }
+
+        private void CREATE_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = Color.LightBlue;
+            MODIFY.BackColor = SystemColors.Control;
+            chosenButton = 1;
+        }
+
+        private void MODIFY_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = Color.LightBlue;
+            chosenButton = 2;
         }
     }
 }

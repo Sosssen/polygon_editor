@@ -31,8 +31,12 @@ namespace polygon_editor
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Canvas = new System.Windows.Forms.PictureBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.MODIFY = new System.Windows.Forms.Button();
+            this.CREATE = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -44,6 +48,7 @@ namespace polygon_editor
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.Controls.Add(this.Canvas, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
@@ -63,6 +68,37 @@ namespace polygon_editor
             this.Canvas.TabStop = false;
             this.Canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.MODIFY);
+            this.groupBox1.Controls.Add(this.CREATE);
+            this.groupBox1.Location = new System.Drawing.Point(1182, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(388, 554);
+            this.groupBox1.TabIndex = 1;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Choose tool";
+            // 
+            // MODIFY
+            // 
+            this.MODIFY.Location = new System.Drawing.Point(209, 60);
+            this.MODIFY.Name = "MODIFY";
+            this.MODIFY.Size = new System.Drawing.Size(171, 97);
+            this.MODIFY.TabIndex = 1;
+            this.MODIFY.Text = "modyfikuj wielokąt";
+            this.MODIFY.UseVisualStyleBackColor = true;
+            this.MODIFY.Click += new System.EventHandler(this.MODIFY_Click);
+            // 
+            // CREATE
+            // 
+            this.CREATE.Location = new System.Drawing.Point(15, 60);
+            this.CREATE.Name = "CREATE";
+            this.CREATE.Size = new System.Drawing.Size(171, 97);
+            this.CREATE.TabIndex = 0;
+            this.CREATE.Text = "stwórz wielokąt";
+            this.CREATE.UseVisualStyleBackColor = true;
+            this.CREATE.Click += new System.EventHandler(this.CREATE_Click);
+            // 
             // polygon_editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
@@ -74,6 +110,7 @@ namespace polygon_editor
             this.Text = "Form1";
             this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -82,6 +119,9 @@ namespace polygon_editor
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.PictureBox Canvas;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button MODIFY;
+        private System.Windows.Forms.Button CREATE;
     }
 }
 
