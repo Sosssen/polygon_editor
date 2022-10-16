@@ -17,7 +17,7 @@ namespace polygon_editor
         private Pen pen = new Pen(Color.Black, 1);
         private SolidBrush sbBlack = new SolidBrush(Color.Black);
         private SolidBrush sbRed = new SolidBrush(Color.Red);
-        private SolidBrush sbBlue = new SolidBrush(Color.Blue);
+        private SolidBrush sbGreen = new SolidBrush(Color.Green);
 
         private int chosenButton;
 
@@ -28,6 +28,10 @@ namespace polygon_editor
 
         private bool colorPoint = false;
         private Point toColor = new Point();
+
+        // 0 - nothing, 1 - point, 2 - edge, 3 - polygon
+        private int moving = 0;
+        private (int, int) pointToMove;
         public polygon_editor()
         {
             InitializeComponent();
@@ -90,7 +94,14 @@ namespace polygon_editor
             {
                 if (e.Button == MouseButtons.Left)
                 {
-
+                    var result = FindPointInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        moving = 1;
+                        int indexOfPolygon = polygons.IndexOf(result.Item2);
+                        pointToMove = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result.Item3));
+                        Debug.WriteLine($"{pointToMove.Item1}, {pointToMove.Item2}");
+                    }
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
@@ -183,7 +194,7 @@ namespace polygon_editor
                     if (chosenButton == 1 && colorPoint && toColor == points[i] && i == 0 && points.Count > 2)
                     {
                         g.DrawEllipse(pen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
-                        g.FillEllipse(sbBlue, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
+                        g.FillEllipse(sbGreen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
                     }
                     else
                     {
@@ -199,6 +210,7 @@ namespace polygon_editor
 
         private void CREATE_Click(object sender, EventArgs e)
         {
+            // 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
             chosenButton = 1;
@@ -209,6 +221,9 @@ namespace polygon_editor
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = Color.LightBlue;
             chosenButton = 2;
+
+            points = new List<Point>();
+            DrawCanvas();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -228,18 +243,30 @@ namespace polygon_editor
             }
             else if(chosenButton == 2)
             {
-                var result = FindPointInPolygons(e.X, e.Y);
-                if(result.Item1)
+                if (moving == 0)
                 {
-                    colorPoint = true;
-                    toColor = result.Item3;
+                    var result = FindPointInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        colorPoint = true;
+                        toColor = result.Item3;
+                    }
+                    else
+                    {
+                        colorPoint = false;
+                    }
                 }
-                else
+                else if (moving == 1)
                 {
-                    colorPoint = false;
+                    polygons[pointToMove.Item1][pointToMove.Item2] = new Point(e.X, e.Y);
                 }
             }
             DrawCanvas(e.X, e.Y);
+        }
+
+        private void Canvas_MouseUp(object sender, MouseEventArgs e)
+        {
+            moving = 0;
         }
     }
 }
