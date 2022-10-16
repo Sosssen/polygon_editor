@@ -17,6 +17,7 @@ namespace polygon_editor
         private Pen pen = new Pen(Color.Black, 1);
         private SolidBrush sbBlack = new SolidBrush(Color.Black);
         private SolidBrush sbRed = new SolidBrush(Color.Red);
+        private SolidBrush sbBlue = new SolidBrush(Color.Blue);
 
         private int chosenButton;
 
@@ -72,7 +73,7 @@ namespace polygon_editor
                         }
                         else
                         {
-                            MessageBox.Show("text", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("możesz łączyć tylko z pierwszym", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
@@ -150,10 +151,12 @@ namespace polygon_editor
                 {
                     Point[] arr = polygon.ToArray();
 
+                    g.DrawPolygon(pen, arr);
+
                     foreach (var point in polygon)
                     {
                         
-                        if (colorPoint && point == toColor)
+                        if (chosenButton == 2 && colorPoint && point == toColor)
                         {
                             g.DrawEllipse(pen, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
                             g.FillEllipse(sbRed, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
@@ -165,8 +168,7 @@ namespace polygon_editor
                             g.FillEllipse(sbBlack, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
                         }
                     }
-
-                    g.DrawPolygon(pen, arr);
+                    
                 }
             }
             using (Graphics g = Graphics.FromImage(drawArea))
@@ -178,10 +180,10 @@ namespace polygon_editor
                 }
                 for(int i = 0; i < points.Count; i++)
                 {
-                    if (colorPoint && toColor == points[i] && i != points.Count - 1)
+                    if (chosenButton == 1 && colorPoint && toColor == points[i] && i == 0 && points.Count > 2)
                     {
                         g.DrawEllipse(pen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
-                        g.FillEllipse(sbRed, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
+                        g.FillEllipse(sbBlue, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
                     }
                     else
                     {
