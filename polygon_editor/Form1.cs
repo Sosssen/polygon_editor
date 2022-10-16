@@ -15,14 +15,18 @@ namespace polygon_editor
     {
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
-        private SolidBrush sb = new SolidBrush(Color.Black);
+        private SolidBrush sbBlack = new SolidBrush(Color.Black);
+        private SolidBrush sbRed = new SolidBrush(Color.Red);
 
         private int chosenButton;
 
         private List<Point> points = new List<Point>();
         private List<List<Point>> polygons = new List<List<Point>>();
 
-        private const int radius = 8;
+        private const int radius = 4;
+
+        private bool colorPoint = false;
+        private Point toColor = new Point();
         public polygon_editor()
         {
             InitializeComponent();
@@ -51,8 +55,7 @@ namespace polygon_editor
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    Point p = new Point(e.X, e.Y);
-                    var result = FindPointInPoints(points, p);
+                    var result = FindPointInPoints(e.X, e.Y);
                     if (result.Item1)
                     {
                         if (result.Item2 == points[0])
@@ -74,7 +77,7 @@ namespace polygon_editor
                     }
                     else
                     {
-                        points.Add(p);
+                        points.Add(new Point(e.X, e.Y));
                     }
 
                     System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
@@ -108,11 +111,11 @@ namespace polygon_editor
 
         }
 
-        private (bool, Point) FindPointInPoints(List<Point> points, Point p)
+        private (bool, Point) FindPointInPoints(int mouseX, int mouseY)
         {
             foreach(var point in points)
             {
-                if ((p.X - point.X) * (p.X - point.X) + (p.Y - point.Y) * (p.Y - point.Y) <= radius * radius) return (true, point);
+                if ((mouseX - point.X) * (mouseX - point.X) + (mouseY - point.Y) * (mouseY - point.Y) <= (2 * radius) * (2 * radius)) return (true, point);
             }
             return (false, new Point());
         }
@@ -123,7 +126,7 @@ namespace polygon_editor
             {
                 foreach(var point in polygon)
                 {
-                    if ((point.X - x) * (point.X - x) + (point.Y - y) * (point.Y - y) <= radius * radius) return (true, polygon, point);
+                    if ((point.X - x) * (point.X - x) + (point.Y - y) * (point.Y - y) <= (2 * radius) * (2 * radius)) return (true, polygon, point);
                 }
             }
             return (false, null, new Point());
@@ -145,14 +148,23 @@ namespace polygon_editor
                 // draw all poygons
                 foreach (var polygon in polygons)
                 {
-
-                    foreach(var point in polygon)
-                    {
-                        g.DrawEllipse(pen, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
-                        g.FillEllipse(sb, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
-                    }
-
                     Point[] arr = polygon.ToArray();
+
+                    foreach (var point in polygon)
+                    {
+                        
+                        if (colorPoint && point == toColor)
+                        {
+                            g.DrawEllipse(pen, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
+                            g.FillEllipse(sbRed, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
+
+                        }
+                        else
+                        {
+                            g.DrawEllipse(pen, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
+                            g.FillEllipse(sbBlack, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
+                        }
+                    }
 
                     g.DrawPolygon(pen, arr);
                 }
@@ -166,8 +178,17 @@ namespace polygon_editor
                 }
                 for(int i = 0; i < points.Count; i++)
                 {
-                    g.DrawEllipse(pen, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
-                    g.FillEllipse(sb, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
+                    if (colorPoint && toColor == points[i] && i != points.Count - 1)
+                    {
+                        g.DrawEllipse(pen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
+                        g.FillEllipse(sbRed, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
+                    }
+                    else
+                    {
+                        g.DrawEllipse(pen, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
+                        g.FillEllipse(sbBlack, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
+                    }
+                    
                 }
                 // draw line to mouse while creating new polygon
                 if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new Point(mouseX, mouseY));
@@ -190,6 +211,32 @@ namespace polygon_editor
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
+            if(chosenButton == 1)
+            {
+                var result = FindPointInPoints(e.X, e.Y);
+                if(result.Item1)
+                {
+                    colorPoint = true;
+                    toColor = result.Item2;
+                }
+                else
+                {
+                    colorPoint = false;
+                }
+            }
+            else if(chosenButton == 2)
+            {
+                var result = FindPointInPolygons(e.X, e.Y);
+                if(result.Item1)
+                {
+                    colorPoint = true;
+                    toColor = result.Item3;
+                }
+                else
+                {
+                    colorPoint = false;
+                }
+            }
             DrawCanvas(e.X, e.Y);
         }
     }
