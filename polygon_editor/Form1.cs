@@ -37,6 +37,9 @@ namespace polygon_editor
         private int moving = 0;
         private (int, int) pointToMove;
         private (int, int) edgeToMove;
+        private Point startingPoint = new Point();
+        private Point startingPointA = new Point();
+        private Point startingPointB = new Point();
         public polygon_editor()
         {
             InitializeComponent();
@@ -114,9 +117,12 @@ namespace polygon_editor
                         {
                             moving = 2;
                             int indexOfPolygon = polygons.IndexOf(result2.Item2);
-                            var pointToMove1 = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item3));
-                            var pointToMove2 = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item4));
-                            Debug.WriteLine($"P1: {pointToMove1.Item1}, {pointToMove1.Item2}, P2: {pointToMove2.Item1}, {pointToMove2.Item2}");
+                            edgeToMove = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item3));
+                            startingPoint = new Point(e.X, e.Y);
+                            startingPointA = polygons[edgeToMove.Item1][edgeToMove.Item2];
+                            startingPointB = polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count];
+                            
+                            // Debug.WriteLine($"P1: {pointToMove1.Item1}, {pointToMove1.Item2}, P2: {pointToMove2.Item1}, {pointToMove2.Item2}");
                         }
                     }
                 }
@@ -306,6 +312,19 @@ namespace polygon_editor
                 else if (moving == 1)
                 {
                     polygons[pointToMove.Item1][pointToMove.Item2] = new Point(e.X, e.Y);
+                }
+                else if (moving == 2)
+                {
+                    int diffX = startingPoint.X - e.X;
+                    int diffY = startingPoint.Y - e.Y;
+                    Point a = startingPointA;
+                    Point b = startingPointB;
+                    a.X -= diffX;
+                    a.Y -= diffY;
+                    b.X -= diffX;
+                    b.Y -= diffY;
+                    polygons[edgeToMove.Item1][edgeToMove.Item2] = a;
+                    polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count] = b;
                 }
             }
             DrawCanvas(e.X, e.Y);
