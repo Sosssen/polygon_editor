@@ -44,6 +44,7 @@ namespace polygon_editor
         private Point startingPointA = new Point();
         private Point startingPointB = new Point();
         private List<Point> polygonToMove = null;
+        private List<Point> polygonToMoveCopy = null;
         public polygon_editor()
         {
             InitializeComponent();
@@ -135,6 +136,13 @@ namespace polygon_editor
                         else
                         {
                             var result3 = FindPolygon(e.X, e.Y);
+                            if (result3.Item1)
+                            {
+                                moving = 3;
+                                polygonToMove = result3.Item2;
+                                polygonToMoveCopy = new List<Point>(result3.Item2);
+                                startingPoint = new Point(e.X, e.Y);
+                            }
                         }
                     }
                 }
@@ -362,6 +370,19 @@ namespace polygon_editor
                     b.Y -= diffY;
                     polygons[edgeToMove.Item1][edgeToMove.Item2] = a;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count] = b;
+                }
+                else if (moving == 3)
+                {
+                    // TODO: maybe foreach and changing fields of var point?
+                    for (int i = 0; i < polygonToMove.Count; i++)
+                    {
+                        int diffX = startingPoint.X - e.X;
+                        int diffY = startingPoint.Y - e.Y;
+                        Point temp = polygonToMoveCopy[i];
+                        temp.X -= diffX;
+                        temp.Y -= diffY;
+                        polygonToMove[i] = temp;
+                    }
                 }
             }
             DrawCanvas(e.X, e.Y);
