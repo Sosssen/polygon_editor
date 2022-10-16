@@ -15,6 +15,7 @@ namespace polygon_editor
     {
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
+        private Pen redPen = new Pen(Color.Red, 6);
         private SolidBrush sbBlack = new SolidBrush(Color.Black);
         private SolidBrush sbRed = new SolidBrush(Color.Red);
         private SolidBrush sbGreen = new SolidBrush(Color.Green);
@@ -27,11 +28,15 @@ namespace polygon_editor
         private const int radius = 4;
 
         private bool colorPoint = false;
-        private Point toColor = new Point();
+        private Point pointToColor = new Point();
+
+        private bool colorEdge = false;
+        private Point edgeToColor = new Point();
 
         // 0 - nothing, 1 - point, 2 - edge, 3 - polygon
         private int moving = 0;
         private (int, int) pointToMove;
+        private (int, int) edgeToMove;
         public polygon_editor()
         {
             InitializeComponent();
@@ -102,6 +107,18 @@ namespace polygon_editor
                         pointToMove = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result.Item3));
                         Debug.WriteLine($"{pointToMove.Item1}, {pointToMove.Item2}");
                     }
+                    else
+                    {
+                        var result2 = FindEdgeInPolygons(e.X, e.Y);
+                        if(result2.Item1)
+                        {
+                            moving = 2;
+                            int indexOfPolygon = polygons.IndexOf(result2.Item2);
+                            var pointToMove1 = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item3));
+                            var pointToMove2 = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item4));
+                            Debug.WriteLine($"P1: {pointToMove1.Item1}, {pointToMove1.Item2}, P2: {pointToMove2.Item1}, {pointToMove2.Item2}");
+                        }
+                    }
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
@@ -162,12 +179,29 @@ namespace polygon_editor
                 {
                     Point[] arr = polygon.ToArray();
 
-                    g.DrawPolygon(pen, arr);
+                    if (colorEdge)
+                    {
+                        for (int i = 0; i < polygon.Count; i++)
+                        {
+                            if (polygon[i] == edgeToColor)
+                            {
+                                Debug.WriteLine("rysuje inna krawedz");
+                                g.DrawLine(redPen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                            }
+                            else
+                            {
+                                g.DrawLine(pen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        g.DrawPolygon(pen, arr);
+                    }
 
                     foreach (var point in polygon)
                     {
-                        
-                        if (chosenButton == 2 && colorPoint && point == toColor)
+                        if (chosenButton == 2 && colorPoint && point == pointToColor)
                         {
                             g.DrawEllipse(pen, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
                             g.FillEllipse(sbRed, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
@@ -180,6 +214,7 @@ namespace polygon_editor
                         }
                     }
                     
+                    
                 }
             }
             using (Graphics g = Graphics.FromImage(drawArea))
@@ -191,7 +226,7 @@ namespace polygon_editor
                 }
                 for(int i = 0; i < points.Count; i++)
                 {
-                    if (chosenButton == 1 && colorPoint && toColor == points[i] && i == 0 && points.Count > 2)
+                    if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
                     {
                         g.DrawEllipse(pen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
                         g.FillEllipse(sbGreen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
@@ -234,7 +269,7 @@ namespace polygon_editor
                 if(result.Item1)
                 {
                     colorPoint = true;
-                    toColor = result.Item2;
+                    pointToColor = result.Item2;
                 }
                 else
                 {
@@ -248,12 +283,24 @@ namespace polygon_editor
                     var result = FindPointInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
+                        colorEdge = false;
                         colorPoint = true;
-                        toColor = result.Item3;
+                        pointToColor = result.Item3;
                     }
                     else
                     {
-                        colorPoint = false;
+                        var result2 = FindEdgeInPolygons(e.X, e.Y);
+                        if (result2.Item1)
+                        {
+                            colorPoint = false;
+                            colorEdge = true;
+                            edgeToColor = result2.Item3;
+                        }
+                        else
+                        {
+                            colorPoint = false;
+                            colorEdge = false;
+                        }
                     }
                 }
                 else if (moving == 1)
@@ -267,6 +314,36 @@ namespace polygon_editor
         private void Canvas_MouseUp(object sender, MouseEventArgs e)
         {
             moving = 0;
+        }
+
+        private double getDistance(int x1, int y1, int x2, int y2)
+        {
+            return Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
+
+        private (bool, List<Point>, Point, Point) FindEdgeInPolygons(int x, int y)
+        {
+            foreach (var polygon in polygons)
+            {
+                // TODO: find better way (more accurate) to calculate this
+                for (int i = 0; i < polygon.Count; i++)
+                {
+                    Point A = polygon[i];
+                    Point B = polygon[(i + 1) % polygon.Count];
+                    int minX = A.X <= B.X ? A.X : B.X;
+                    int minY = A.Y <= B.Y ? A.Y : B.Y;
+                    int maxX = A.X > B.X ? A.X : B.X;
+                    int maxY = A.Y > B.Y ? A.Y : B.Y;
+                    if (x < minX || x > maxX || y < minY || y > maxY) continue;
+                    double a = getDistance(x, y, B.X, B.Y);
+                    double b = getDistance(x, y, A.X, A.Y);
+                    double c = getDistance(A.X, A.Y, B.X, B.Y);
+                    double p = (a + b + c) / 2;
+                    double S = Math.Sqrt(p * (p - a) * (p - b) * (p - c));
+                    if (2 * S / c < 6) return (true, polygon, A, B);
+                }
+            }
+            return (false, null, new Point(), new Point());
         }
     }
 }
