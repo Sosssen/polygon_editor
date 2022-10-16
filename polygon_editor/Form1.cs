@@ -96,6 +96,10 @@ namespace polygon_editor
                     System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
                     System.Diagnostics.Debug.WriteLine($"polygons = {polygons.Count}");
                 }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    points = new List<Point>();
+                }
             }
             // TODO: what to do if polygon was not finished
             else if (chosenButton == 2)
