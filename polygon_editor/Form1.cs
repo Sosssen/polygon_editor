@@ -14,7 +14,7 @@ namespace polygon_editor
     public partial class polygon_editor : Form
     {
         private Bitmap drawArea;
-        private Pen pen = new Pen(Color.Black, 3);
+        private Pen pen = new Pen(Color.Black, 1);
         private SolidBrush sb = new SolidBrush(Color.Black);
 
         private int chosenButton;
@@ -79,8 +79,6 @@ namespace polygon_editor
 
                     System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
                     System.Diagnostics.Debug.WriteLine($"polygons = {polygons.Count}");
-
-                    DrawCanvas();
                 }
             }
             // TODO: what to do if polygon was not finished
@@ -103,10 +101,10 @@ namespace polygon_editor
                             polygons.Remove(result.Item2);
                         }
                     }
-
-                    DrawCanvas();
                 }
             }
+
+            DrawCanvas(e.X, e.Y);
 
         }
 
@@ -131,7 +129,7 @@ namespace polygon_editor
             return (false, null, new Point());
         }
 
-        void DrawCanvas()
+        void DrawCanvas(int mouseX = 0, int mouseY = 0)
         {
 
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
@@ -140,9 +138,11 @@ namespace polygon_editor
             {
                 g.Clear(Color.White);
             }
-            Debug.WriteLine("test");
+            // Debug.WriteLine("test");
+
             using (Graphics g = Graphics.FromImage(drawArea))
             {
+                // draw all poygons
                 foreach (var polygon in polygons)
                 {
 
@@ -159,6 +159,7 @@ namespace polygon_editor
             }
             using (Graphics g = Graphics.FromImage(drawArea))
             {
+                // connect all points that are not yet in any polygon
                 for(int i = 0; i < points.Count - 1; i++)
                 {
                     g.DrawLine(pen, points[i], points[i + 1]);
@@ -168,6 +169,8 @@ namespace polygon_editor
                     g.DrawEllipse(pen, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
                     g.FillEllipse(sb, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
                 }
+                // draw line to mouse while creating new polygon
+                if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new Point(mouseX, mouseY));
             }
         }
 
@@ -183,6 +186,11 @@ namespace polygon_editor
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = Color.LightBlue;
             chosenButton = 2;
+        }
+
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            DrawCanvas(e.X, e.Y);
         }
     }
 }
