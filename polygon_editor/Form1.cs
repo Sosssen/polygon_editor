@@ -139,6 +139,7 @@ namespace polygon_editor
                             if (result3.Item1)
                             {
                                 moving = 3;
+                                colorPolygon = false;
                                 polygonToMove = result3.Item2;
                                 polygonToMoveCopy = new List<Point>(result3.Item2);
                                 startingPoint = new Point(e.X, e.Y);
