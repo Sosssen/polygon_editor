@@ -168,6 +168,19 @@ namespace polygon_editor
                     }
                 }
             }
+            else if (chosenButton == 3)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        Point newPoint = new Point((result.Item3.X + result.Item4.X) / 2, (result.Item3.Y + result.Item4.Y) / 2);
+                        int i = result.Item2.IndexOf(result.Item3);
+                        result.Item2.Insert(i + 1, newPoint);
+                    }
+                }
+            }
 
             DrawCanvas(e.X, e.Y);
 
@@ -292,6 +305,7 @@ namespace polygon_editor
             // 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
             chosenButton = 1;
         }
 
@@ -299,18 +313,27 @@ namespace polygon_editor
         {
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = Color.LightBlue;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
             chosenButton = 2;
 
             points = new List<Point>();
             DrawCanvas();
         }
 
+        private void MIDDLE_INSERT_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = Color.LightBlue;
+            chosenButton = 3;
+        }
+
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if(chosenButton == 1)
+            if (chosenButton == 1)
             {
                 var result = FindPointInPoints(e.X, e.Y);
-                if(result.Item1)
+                if (result.Item1)
                 {
                     colorPoint = true;
                     pointToColor = result.Item2;
@@ -320,7 +343,7 @@ namespace polygon_editor
                     colorPoint = false;
                 }
             }
-            else if(chosenButton == 2)
+            else if (chosenButton == 2)
             {
                 if (moving == 0)
                 {
@@ -345,7 +368,7 @@ namespace polygon_editor
                         else
                         {
                             var result3 = FindPolygon(e.X, e.Y);
-                            if(result3.Item1)
+                            if (result3.Item1)
                             {
                                 colorPoint = false;
                                 colorEdge = false;
@@ -389,6 +412,22 @@ namespace polygon_editor
                         temp.X -= diffX;
                         temp.Y -= diffY;
                         polygonToMove[i] = temp;
+                    }
+                }
+            }
+            else if (chosenButton == 3)
+            {
+                if (moving == 0)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        colorEdge = true;
+                        edgeToColor = result.Item3;
+                    }
+                    else
+                    {
+                        colorEdge = false;
                     }
                 }
             }
@@ -506,5 +545,7 @@ namespace polygon_editor
             // If they are not collinear, they must intersect in exactly one point.
             return 1;
         }
+
+        
     }
 }
