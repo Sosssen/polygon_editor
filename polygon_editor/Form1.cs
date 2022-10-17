@@ -53,6 +53,12 @@ namespace polygon_editor
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
+            // doing this to fix bug with scaling in Windows xddd
+            Rectangle screen = Screen.PrimaryScreen.WorkingArea;
+            int w = (int)(screen.Width / 1.5);
+            int h = (int)(screen.Height / 1.5);
+            this.Size = new Size(w, h);
+
 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
