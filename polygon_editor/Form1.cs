@@ -166,6 +166,28 @@ namespace polygon_editor
                             polygons.Remove(result.Item2);
                         }
                     }
+                    else
+                    {
+                        var result2 = FindEdgeInPolygons(e.X, e.Y);
+                        if (result2.Item1)
+                        {
+                            result2.Item2.Remove(result2.Item3);
+                            result2.Item2.Remove(result2.Item4);
+
+                            if (result2.Item2.Count < 3)
+                            {
+                                polygons.Remove(result2.Item2);
+                            }
+                        }
+                        else
+                        {
+                            var result3 = FindPolygon(e.X, e.Y);
+                            if(result3.Item1)
+                            {
+                                polygons.Remove(result3.Item2);
+                            }
+                        }
+                    }
                 }
             }
             else if (chosenButton == 3)
