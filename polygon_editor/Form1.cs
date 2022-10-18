@@ -62,6 +62,7 @@ namespace polygon_editor
 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
             chosenButton = 1;
 
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
