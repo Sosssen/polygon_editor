@@ -37,8 +37,9 @@ namespace polygon_editor
             this.MODIFY = new System.Windows.Forms.Button();
             this.CREATE = new System.Windows.Forms.Button();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.MIDDLE_INSERT = new System.Windows.Forms.Button();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.SET_LENGTH = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -149,6 +150,7 @@ namespace polygon_editor
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.Controls.Add(this.MIDDLE_INSERT, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.SET_LENGTH, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 224);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -156,6 +158,17 @@ namespace polygon_editor
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(376, 215);
             this.tableLayoutPanel4.TabIndex = 3;
+            // 
+            // MIDDLE_INSERT
+            // 
+            this.MIDDLE_INSERT.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MIDDLE_INSERT.Location = new System.Drawing.Point(3, 3);
+            this.MIDDLE_INSERT.Name = "MIDDLE_INSERT";
+            this.MIDDLE_INSERT.Size = new System.Drawing.Size(182, 209);
+            this.MIDDLE_INSERT.TabIndex = 0;
+            this.MIDDLE_INSERT.Text = "dodaj wierzchołek w środku";
+            this.MIDDLE_INSERT.UseVisualStyleBackColor = true;
+            this.MIDDLE_INSERT.Click += new System.EventHandler(this.MIDDLE_INSERT_Click);
             // 
             // tableLayoutPanel5
             // 
@@ -170,16 +183,16 @@ namespace polygon_editor
             this.tableLayoutPanel5.Size = new System.Drawing.Size(376, 215);
             this.tableLayoutPanel5.TabIndex = 4;
             // 
-            // MIDDLE_INSERT
+            // SET_LENGTH
             // 
-            this.MIDDLE_INSERT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MIDDLE_INSERT.Location = new System.Drawing.Point(3, 3);
-            this.MIDDLE_INSERT.Name = "MIDDLE_INSERT";
-            this.MIDDLE_INSERT.Size = new System.Drawing.Size(182, 209);
-            this.MIDDLE_INSERT.TabIndex = 0;
-            this.MIDDLE_INSERT.Text = "dodaj krawędź w środku";
-            this.MIDDLE_INSERT.UseVisualStyleBackColor = true;
-            this.MIDDLE_INSERT.Click += new System.EventHandler(this.MIDDLE_INSERT_Click);
+            this.SET_LENGTH.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SET_LENGTH.Location = new System.Drawing.Point(191, 3);
+            this.SET_LENGTH.Name = "SET_LENGTH";
+            this.SET_LENGTH.Size = new System.Drawing.Size(182, 209);
+            this.SET_LENGTH.TabIndex = 1;
+            this.SET_LENGTH.Text = "zmień rozmiar krawędzi";
+            this.SET_LENGTH.UseVisualStyleBackColor = true;
+            this.SET_LENGTH.Click += new System.EventHandler(this.SET_LENGTH_Click);
             // 
             // polygon_editor
             // 
@@ -212,6 +225,7 @@ namespace polygon_editor
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.Button MIDDLE_INSERT;
+        private System.Windows.Forms.Button SET_LENGTH;
     }
 }
 

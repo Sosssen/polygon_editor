@@ -63,6 +63,7 @@ namespace polygon_editor
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
             chosenButton = 1;
 
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
@@ -204,6 +205,17 @@ namespace polygon_editor
                     }
                 }
             }
+            else if (chosenButton == 4)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        
+                    }
+                }
+            }
 
             DrawCanvas(e.X, e.Y);
 
@@ -232,7 +244,6 @@ namespace polygon_editor
 
         void DrawCanvas(int mouseX = 0, int mouseY = 0)
         {
-
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
             Canvas.Image = drawArea;
             using (Graphics g = Graphics.FromImage(drawArea))
@@ -323,12 +334,14 @@ namespace polygon_editor
             }
         }
 
+        // TODO: change buttons to list and change indexing from 0 not from 1
         private void CREATE_Click(object sender, EventArgs e)
         {
             // 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
             chosenButton = 1;
         }
 
@@ -337,6 +350,7 @@ namespace polygon_editor
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = Color.LightBlue;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
             chosenButton = 2;
 
             points = new List<Point>();
@@ -348,7 +362,23 @@ namespace polygon_editor
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = Color.LightBlue;
+            SET_LENGTH.BackColor = SystemColors.Control;
             chosenButton = 3;
+
+            points = new List<Point>();
+            DrawCanvas();
+        }
+
+        private void SET_LENGTH_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = Color.LightBlue;
+            chosenButton = 4;
+
+            points = new List<Point>();
+            DrawCanvas();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -439,6 +469,22 @@ namespace polygon_editor
                 }
             }
             else if (chosenButton == 3)
+            {
+                if (moving == 0)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        colorEdge = true;
+                        edgeToColor = result.Item3;
+                    }
+                    else
+                    {
+                        colorEdge = false;
+                    }
+                }
+            }
+            else if (chosenButton == 4)
             {
                 if (moving == 0)
                 {
