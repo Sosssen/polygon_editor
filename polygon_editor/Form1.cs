@@ -244,6 +244,7 @@ namespace polygon_editor
 
         void DrawCanvas(int mouseX = 0, int mouseY = 0)
         {
+            drawArea.Dispose();
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
             Canvas.Image = drawArea;
             using (Graphics g = Graphics.FromImage(drawArea))
