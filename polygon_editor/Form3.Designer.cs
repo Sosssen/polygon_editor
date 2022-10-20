@@ -32,7 +32,6 @@ namespace polygon_editor
             this.APPLY = new System.Windows.Forms.Button();
             this.CANCEL = new System.Windows.Forms.Button();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.domainUpDown1 = new System.Windows.Forms.DomainUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,21 +63,12 @@ namespace polygon_editor
             this.numericUpDown1.TabIndex = 3;
             this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // domainUpDown1
-            // 
-            this.domainUpDown1.Location = new System.Drawing.Point(29, 47);
-            this.domainUpDown1.Name = "domainUpDown1";
-            this.domainUpDown1.Size = new System.Drawing.Size(240, 39);
-            this.domainUpDown1.TabIndex = 4;
-            this.domainUpDown1.Text = "domainUpDown1";
-            // 
             // Form3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(324, 129);
-            this.Controls.Add(this.domainUpDown1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.CANCEL);
             this.Controls.Add(this.APPLY);
@@ -94,6 +84,5 @@ namespace polygon_editor
         private System.Windows.Forms.Button APPLY;
         private System.Windows.Forms.Button CANCEL;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.DomainUpDown domainUpDown1;
     }
 }

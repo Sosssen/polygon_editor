@@ -20,7 +20,7 @@ namespace polygon_editor
             this.MaximizeBox = false;
             this.MinimizeBox = false;
 
-            domainUpDown1.Items = polygon_editor.test;
+            // domainUpDown1.Items = polygon_editor.test;
         }
 
         private void APPLY_Click(object sender, EventArgs e)

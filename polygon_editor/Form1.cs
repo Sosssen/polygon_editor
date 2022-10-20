@@ -14,7 +14,7 @@ namespace polygon_editor
     public partial class polygon_editor : Form
     {
         public static double edgeLength = 0;
-        public static List<int> test = new List<int>();
+        // public static List<int> test = new List<int>();
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -25,36 +25,36 @@ namespace polygon_editor
 
         private int chosenButton;
 
-        private List<Point> points = new List<Point>();
-        private List<List<Point>> polygons = new List<List<Point>>();
+        private List<MyPoint> points = new List<MyPoint>();
+        private List<List<MyPoint>> polygons = new List<List<MyPoint>>();
 
         private const int radius = 4;
 
         private bool colorPoint = false;
-        private Point pointToColor = new Point();
+        private MyPoint pointToColor = new MyPoint();
 
         private bool colorEdge = false;
-        private Point edgeToColor = new Point();
+        private MyPoint edgeToColor = new MyPoint();
 
         private bool colorPolygon = false;
-        private List<Point> polygonToColor = null;
+        private List<MyPoint> polygonToColor = null;
 
         // 0 - nothing, 1 - point, 2 - edge, 3 - polygon
         private int moving = 0;
         private (int, int) pointToMove;
         private (int, int) edgeToMove;
-        private Point startingPoint = new Point();
-        private Point startingPointA = new Point();
-        private Point startingPointB = new Point();
-        private List<Point> polygonToMove = null;
-        private List<Point> polygonToMoveCopy = null;
+        private MyPoint startingPoint = new MyPoint();
+        private MyPoint startingPointA = new MyPoint();
+        private MyPoint startingPointB = new MyPoint();
+        private List<MyPoint> polygonToMove = null;
+        private List<MyPoint> polygonToMoveCopy = null;
         public polygon_editor()
         {
             InitializeComponent();
 
-            test.Add(5);
-            test.Add(6);
-            test.Add(1);
+            //test.Add(5);
+            //test.Add(6);
+            //test.Add(1);
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
@@ -102,7 +102,7 @@ namespace polygon_editor
                             else
                             {
                                 polygons.Add(points);
-                                points = new List<Point>();
+                                points = new List<MyPoint>();
                             }
                         }
                         else
@@ -112,7 +112,7 @@ namespace polygon_editor
                     }
                     else
                     {
-                        points.Add(new Point(e.X, e.Y));
+                        points.Add(new MyPoint(e.X, e.Y));
                     }
 
                     System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
@@ -120,7 +120,7 @@ namespace polygon_editor
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    points = new List<Point>();
+                    points = new List<MyPoint>();
                 }
             }
             // TODO: what to do if polygon was not finished
@@ -144,9 +144,9 @@ namespace polygon_editor
                             moving = 2;
                             int indexOfPolygon = polygons.IndexOf(result2.Item2);
                             edgeToMove = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result2.Item3));
-                            startingPoint = new Point(e.X, e.Y);
-                            startingPointA = polygons[edgeToMove.Item1][edgeToMove.Item2];
-                            startingPointB = polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count];
+                            startingPoint = new MyPoint(e.X, e.Y);
+                            startingPointA = new MyPoint(polygons[edgeToMove.Item1][edgeToMove.Item2]);
+                            startingPointB = new MyPoint(polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count]);
                             
                             // Debug.WriteLine($"P1: {pointToMove1.Item1}, {pointToMove1.Item2}, P2: {pointToMove2.Item1}, {pointToMove2.Item2}");
                         }
@@ -158,8 +158,8 @@ namespace polygon_editor
                                 moving = 3;
                                 colorPolygon = false;
                                 polygonToMove = result3.Item2;
-                                polygonToMoveCopy = new List<Point>(result3.Item2);
-                                startingPoint = new Point(e.X, e.Y);
+                                polygonToMoveCopy = new List<MyPoint>(result3.Item2);
+                                startingPoint = new MyPoint(e.X, e.Y);
                             }
                         }
                     }
@@ -208,7 +208,7 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        Point newPoint = new Point((result.Item3.X + result.Item4.X) / 2, (result.Item3.Y + result.Item4.Y) / 2);
+                        MyPoint newPoint = new MyPoint((result.Item3.x + result.Item4.x) / 2, (result.Item3.y + result.Item4.y) / 2);
                         int i = result.Item2.IndexOf(result.Item3);
                         result.Item2.Insert(i + 1, newPoint);
                     }
@@ -221,10 +221,10 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        Point p1 = result.Item3;
-                        Point p2 = result.Item4;
+                        MyPoint p1 = result.Item3;
+                        MyPoint p2 = result.Item4;
                         // TODO: change result to p1,p2...
-                        edgeLength = getDistance(result.Item3.X, result.Item3.Y, result.Item4.X, result.Item4.Y);
+                        edgeLength = getDistance(result.Item3.x, result.Item3.y, result.Item4.x, result.Item4.y);
                         double temp = edgeLength;
                         Form2 form = new Form2();
                         form.StartPosition = FormStartPosition.CenterParent;
@@ -235,13 +235,13 @@ namespace polygon_editor
                         //double b = p1.Y - a * p1.X;
                         // TODO: maybe better precision?
                         double scale = edgeLength / temp;
-                        double lengthX = p2.X - p1.X;
-                        double lengthY = p2.Y - p1.Y;
+                        double lengthX = p2.x - p1.x;
+                        double lengthY = p2.y - p1.y;
                         lengthX *= scale;
                         lengthY *= scale;
-                        double x = p1.X + lengthX;
-                        double y = p1.Y + lengthY;
-                        result.Item2[result.Item2.IndexOf(p2)] = new Point((int)x, (int)y);
+                        double x = p1.x + lengthX;
+                        double y = p1.y + lengthY;
+                        result.Item2[result.Item2.IndexOf(p2)] = new MyPoint((int)x, (int)y);
 
                     }
                 }
@@ -278,25 +278,25 @@ namespace polygon_editor
 
         }
 
-        private (bool, Point) FindPointInPoints(int mouseX, int mouseY)
+        private (bool, MyPoint) FindPointInPoints(int mouseX, int mouseY)
         {
             foreach(var point in points)
             {
-                if ((mouseX - point.X) * (mouseX - point.X) + (mouseY - point.Y) * (mouseY - point.Y) <= (2 * radius) * (2 * radius)) return (true, point);
+                if ((mouseX - point.x) * (mouseX - point.x) + (mouseY - point.y) * (mouseY - point.y) <= (2 * radius) * (2 * radius)) return (true, point);
             }
-            return (false, new Point());
+            return (false, new MyPoint());
         }
 
-        private (bool, List<Point>, Point) FindPointInPolygons(int x, int y)
+        private (bool, List<MyPoint>, MyPoint) FindPointInPolygons(int x, int y)
         {
             foreach(var polygon in polygons)
             {
                 foreach(var point in polygon)
                 {
-                    if ((point.X - x) * (point.X - x) + (point.Y - y) * (point.Y - y) <= (2 * radius) * (2 * radius)) return (true, polygon, point);
+                    if ((point.x - x) * (point.x - x) + (point.y - y) * (point.y - y) <= (2 * radius) * (2 * radius)) return (true, polygon, point);
                 }
             }
-            return (false, null, new Point());
+            return (false, null, null);
         }
 
         void DrawCanvas(int mouseX = 0, int mouseY = 0)
@@ -315,7 +315,12 @@ namespace polygon_editor
                 // draw all poygons
                 foreach (var polygon in polygons)
                 {
-                    Point[] arr = polygon.ToArray();
+                    MyPoint[] arr = polygon.ToArray();
+                    Point[] newArr = new Point[arr.Length];
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        newArr[i] = arr[i];
+                    }
 
                     if (colorEdge)
                     {
@@ -336,30 +341,30 @@ namespace polygon_editor
                     {
                         if (polygon == polygonToColor)
                         {
-                            g.DrawPolygon(redPen, arr);
+                            g.DrawPolygon(redPen, newArr);
                         }
                         else
                         {
-                            g.DrawPolygon(pen, arr);
+                            g.DrawPolygon(pen, newArr);
                         }
                     }
                     else
                     {
-                        g.DrawPolygon(pen, arr);
+                        g.DrawPolygon(pen, newArr);
                     }
 
                     foreach (var point in polygon)
                     {
                         if (chosenButton == 2 && colorPoint && point == pointToColor)
                         {
-                            g.DrawEllipse(pen, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
-                            g.FillEllipse(sbRed, point.X - 2 * radius, point.Y - 2 * radius, 4 * radius, 4 * radius);
+                            g.DrawEllipse(pen, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
+                            g.FillEllipse(sbRed, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
 
                         }
                         else
                         {
-                            g.DrawEllipse(pen, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
-                            g.FillEllipse(sbBlack, point.X - radius, point.Y - radius, 2 * radius, 2 * radius);
+                            g.DrawEllipse(pen, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                            g.FillEllipse(sbBlack, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
                         }
                     }
                     
@@ -377,18 +382,18 @@ namespace polygon_editor
                 {
                     if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
                     {
-                        g.DrawEllipse(pen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
-                        g.FillEllipse(sbGreen, points[i].X - 2 * radius, points[i].Y - 2 * radius, 4 * radius, 4 * radius);
+                        g.DrawEllipse(pen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
+                        g.FillEllipse(sbGreen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
                     }
                     else
                     {
-                        g.DrawEllipse(pen, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
-                        g.FillEllipse(sbBlack, points[i].X - radius, points[i].Y - radius, 2 * radius, 2 * radius);
+                        g.DrawEllipse(pen, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
+                        g.FillEllipse(sbBlack, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
                     }
                     
                 }
                 // draw line to mouse while creating new polygon
-                if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new Point(mouseX, mouseY));
+                if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
             }
         }
 
@@ -416,7 +421,7 @@ namespace polygon_editor
             REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 2;
 
-            points = new List<Point>();
+            points = new List<MyPoint>();
             DrawCanvas();
         }
 
@@ -430,7 +435,7 @@ namespace polygon_editor
             REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 3;
 
-            points = new List<Point>();
+            points = new List<MyPoint>();
             DrawCanvas();
         }
 
@@ -444,7 +449,7 @@ namespace polygon_editor
             REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 4;
 
-            points = new List<Point>();
+            points = new List<MyPoint>();
             DrawCanvas();
         }
 
@@ -458,7 +463,7 @@ namespace polygon_editor
             REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 5;
 
-            points = new List<Point>();
+            points = new List<MyPoint>();
             DrawCanvas();
         }
 
@@ -472,7 +477,7 @@ namespace polygon_editor
             REMOVE_REL.BackColor = Color.LightBlue;
             chosenButton = 6;
 
-            points = new List<Point>();
+            points = new List<MyPoint>();
             DrawCanvas();
         }
 
@@ -534,18 +539,18 @@ namespace polygon_editor
                 }
                 else if (moving == 1)
                 {
-                    polygons[pointToMove.Item1][pointToMove.Item2] = new Point(e.X, e.Y);
+                    polygons[pointToMove.Item1][pointToMove.Item2] = new MyPoint(e.X, e.Y);
                 }
                 else if (moving == 2)
                 {
-                    int diffX = startingPoint.X - e.X;
-                    int diffY = startingPoint.Y - e.Y;
-                    Point a = startingPointA;
-                    Point b = startingPointB;
-                    a.X -= diffX;
-                    a.Y -= diffY;
-                    b.X -= diffX;
-                    b.Y -= diffY;
+                    int diffX = startingPoint.x - e.X;
+                    int diffY = startingPoint.y - e.Y;
+                    MyPoint a = new MyPoint(startingPointA);
+                    MyPoint b = new MyPoint(startingPointB);
+                    a.x -= diffX;
+                    a.y -= diffY;
+                    b.x -= diffX;
+                    b.y -= diffY;
                     polygons[edgeToMove.Item1][edgeToMove.Item2] = a;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count] = b;
                 }
@@ -554,11 +559,11 @@ namespace polygon_editor
                     // TODO: maybe foreach and changing fields of var point?
                     for (int i = 0; i < polygonToMove.Count; i++)
                     {
-                        int diffX = startingPoint.X - e.X;
-                        int diffY = startingPoint.Y - e.Y;
-                        Point temp = polygonToMoveCopy[i];
-                        temp.X -= diffX;
-                        temp.Y -= diffY;
+                        int diffX = startingPoint.x - e.X;
+                        int diffY = startingPoint.y - e.Y;
+                        MyPoint temp = new MyPoint(polygonToMoveCopy[i]);
+                        temp.x -= diffX;
+                        temp.y -= diffY;
                         polygonToMove[i] = temp;
                     }
                 }
@@ -640,32 +645,32 @@ namespace polygon_editor
             return Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         }
 
-        private (bool, List<Point>, Point, Point) FindEdgeInPolygons(int x, int y)
+        private (bool, List<MyPoint>, MyPoint, MyPoint) FindEdgeInPolygons(int x, int y)
         {
             foreach (var polygon in polygons)
             {
                 // TODO: find better way (more accurate) to calculate this
                 for (int i = 0; i < polygon.Count; i++)
                 {
-                    Point A = polygon[i];
-                    Point B = polygon[(i + 1) % polygon.Count];
-                    int minX = A.X <= B.X ? A.X : B.X;
-                    int minY = A.Y <= B.Y ? A.Y : B.Y;
-                    int maxX = A.X > B.X ? A.X : B.X;
-                    int maxY = A.Y > B.Y ? A.Y : B.Y;
+                    MyPoint A = polygon[i];
+                    MyPoint B = polygon[(i + 1) % polygon.Count];
+                    int minX = A.x <= B.x ? A.x : B.x;
+                    int minY = A.y <= B.y ? A.y : B.y;
+                    int maxX = A.x > B.x ? A.x : B.x;
+                    int maxY = A.y > B.y ? A.y : B.y;
                     if (x < minX || x > maxX || y < minY || y > maxY) continue;
-                    double a = getDistance(x, y, B.X, B.Y);
-                    double b = getDistance(x, y, A.X, A.Y);
-                    double c = getDistance(A.X, A.Y, B.X, B.Y);
+                    double a = getDistance(x, y, B.x, B.y);
+                    double b = getDistance(x, y, A.x, A.y);
+                    double c = getDistance(A.x, A.y, B.x, B.y);
                     double p = (a + b + c) / 2;
                     double S = Math.Sqrt(p * (p - a) * (p - b) * (p - c));
                     if (2 * S / c < 6) return (true, polygon, A, B);
                 }
             }
-            return (false, null, new Point(), new Point());
+            return (false, null, new MyPoint(), new MyPoint());
         }
 
-        private (bool, List<Point>) FindPolygon(int x ,int y)
+        private (bool, List<MyPoint>) FindPolygon(int x ,int y)
         {
             int counter;
             Debug.WriteLine("run findpolygon");
@@ -674,9 +679,9 @@ namespace polygon_editor
                 counter = 0;
                 for (int i = 0; i < polygon.Count; i++)
                 {
-                    Point A = polygon[i];
-                    Point B = polygon[(i + 1) % polygon.Count];
-                    if (areIntersecting(0, 0, x, y, A.X, A.Y, B.X, B.Y) == 1) counter++;
+                    MyPoint A = polygon[i];
+                    MyPoint B = polygon[(i + 1) % polygon.Count];
+                    if (areIntersecting(0, 0, x, y, A.x, A.y, B.x, B.y) == 1) counter++;
                 }
                 Debug.WriteLine($"Polygon number {polygons.IndexOf(polygon)}, counter: {counter}");
                 if (counter % 2 == 1) return (true, polygon);
@@ -741,7 +746,31 @@ namespace polygon_editor
             // If they are not collinear, they must intersect in exactly one point.
             return 1;
         }
+        public class MyPoint
+        {
+            // TODO: change to setters?
+            public int x;
+            public int y;
 
-        
+            public MyPoint()
+            {
+                this.x = 0;
+                this.y = 0;
+            }
+
+            public MyPoint(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+
+            public MyPoint(MyPoint p)
+            {
+                this.x = p.x;
+                this.y = p.y;
+            }
+
+            public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
+        }
     }
 }
