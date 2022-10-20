@@ -14,6 +14,7 @@ namespace polygon_editor
     public partial class polygon_editor : Form
     {
         public static double edgeLength = 0;
+        public static List<int> test = new List<int>();
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -50,6 +51,10 @@ namespace polygon_editor
         public polygon_editor()
         {
             InitializeComponent();
+
+            test.Add(5);
+            test.Add(6);
+            test.Add(1);
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
@@ -241,6 +246,33 @@ namespace polygon_editor
                     }
                 }
             }
+            else if (chosenButton == 5)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        Form3 form = new Form3();
+                        form.StartPosition = FormStartPosition.CenterParent;
+                        form.ShowDialog();
+                    }
+                }
+            }
+            else if (chosenButton == 6)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        Form3 form = new Form3();
+                        form.StartPosition = FormStartPosition.CenterParent;
+                        form.ShowDialog();
+                    }
+                }
+            }
+
 
             DrawCanvas(e.X, e.Y);
 
@@ -548,6 +580,38 @@ namespace polygon_editor
                 }
             }
             else if (chosenButton == 4)
+            {
+                if (moving == 0)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        colorEdge = true;
+                        edgeToColor = result.Item3;
+                    }
+                    else
+                    {
+                        colorEdge = false;
+                    }
+                }
+            }
+            else if (chosenButton == 5)
+            {
+                if (moving == 0)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        colorEdge = true;
+                        edgeToColor = result.Item3;
+                    }
+                    else
+                    {
+                        colorEdge = false;
+                    }
+                }
+            }
+            else if (chosenButton == 6)
             {
                 if (moving == 0)
                 {
