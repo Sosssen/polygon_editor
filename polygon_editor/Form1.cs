@@ -14,7 +14,8 @@ namespace polygon_editor
     public partial class polygon_editor : Form
     {
         public static double edgeLength = 0;
-        // public static List<int> test = new List<int>();
+        public static MyPoint chosenPointRel = null;
+        public static int chosenRelation = -1;
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -52,10 +53,6 @@ namespace polygon_editor
         {
             InitializeComponent();
 
-            //test.Add(5);
-            //test.Add(6);
-            //test.Add(1);
-
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
             this.MaximizeBox = false;
@@ -86,6 +83,10 @@ namespace polygon_editor
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
+            // TODO: change this!
+            colorPoint = false;
+            colorEdge = false;
+            colorPolygon = false;
             if (chosenButton == 1)
             {
                 if (e.Button == MouseButtons.Left)
@@ -158,7 +159,11 @@ namespace polygon_editor
                                 moving = 3;
                                 colorPolygon = false;
                                 polygonToMove = result3.Item2;
-                                polygonToMoveCopy = new List<MyPoint>(result3.Item2);
+                                polygonToMoveCopy = new List<MyPoint>();
+                                for (int i = 0; i  < result3.Item2.Count; i++)
+                                {
+                                    polygonToMoveCopy.Add(new MyPoint(result3.Item2[i]));
+                                }
                                 startingPoint = new MyPoint(e.X, e.Y);
                             }
                         }
@@ -218,6 +223,7 @@ namespace polygon_editor
             {
                 if (e.Button == MouseButtons.Left)
                 {
+                    // TODO: trycatch this
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
@@ -253,9 +259,16 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
+                        chosenPointRel = result.Item3;
+
                         Form3 form = new Form3();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
+
+                        if (chosenRelation != -1)
+                        {
+                            result.Item3.relations.Add(chosenRelation);
+                        }
                     }
                 }
             }
@@ -266,7 +279,7 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        Form3 form = new Form3();
+                        Form4 form = new Form4();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
                     }
@@ -395,6 +408,33 @@ namespace polygon_editor
                 // draw line to mouse while creating new polygon
                 if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
             }
+            using (Graphics g = Graphics.FromImage(drawArea))
+            {
+                foreach (var polygon in polygons)
+                {
+                    for (int i = 0; i < polygon.Count; i++)
+                    {
+                        if (polygon[i].relations.Count > 0)
+                        {
+                            Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
+                            string text = "";
+                            foreach (var number in polygon[i].relations)
+                            {
+                                text += number.ToString();
+                                text += " ";
+                            }
+                            text = text.Substring(0, text.Length - 1);
+                            using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
+                            {
+                                StringFormat sf = new StringFormat();
+                                sf.LineAlignment = StringAlignment.Center;
+                                sf.Alignment = StringAlignment.Center;
+                                g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // TODO: change buttons to list and change indexing from 0 not from 1
@@ -508,6 +548,7 @@ namespace polygon_editor
                         colorPolygon = false;
                         pointToColor = result.Item3;
                     }
+                    // TODO: when moving point/edge it shouldn't be colored anymore
                     else
                     {
                         var result2 = FindEdgeInPolygons(e.X, e.Y);
@@ -539,7 +580,8 @@ namespace polygon_editor
                 }
                 else if (moving == 1)
                 {
-                    polygons[pointToMove.Item1][pointToMove.Item2] = new MyPoint(e.X, e.Y);
+                    polygons[pointToMove.Item1][pointToMove.Item2].x = e.X;
+                    polygons[pointToMove.Item1][pointToMove.Item2].y = e.Y;
                 }
                 else if (moving == 2)
                 {
@@ -551,8 +593,10 @@ namespace polygon_editor
                     a.y -= diffY;
                     b.x -= diffX;
                     b.y -= diffY;
-                    polygons[edgeToMove.Item1][edgeToMove.Item2] = a;
-                    polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count] = b;
+                    polygons[edgeToMove.Item1][edgeToMove.Item2].x = a.x;
+                    polygons[edgeToMove.Item1][edgeToMove.Item2].y = a.y;
+                    polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].x = b.x;
+                    polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].y = b.y;
                 }
                 else if (moving == 3)
                 {
@@ -564,7 +608,8 @@ namespace polygon_editor
                         MyPoint temp = new MyPoint(polygonToMoveCopy[i]);
                         temp.x -= diffX;
                         temp.y -= diffY;
-                        polygonToMove[i] = temp;
+                        polygonToMove[i].x = temp.x;
+                        polygonToMove[i].y = temp.y;
                     }
                 }
             }
@@ -749,8 +794,11 @@ namespace polygon_editor
         public class MyPoint
         {
             // TODO: change to setters?
+            // TODO: make new List<int> not to be in every constructor
             public int x;
             public int y;
+
+            public HashSet<int> relations = new HashSet<int>();
 
             public MyPoint()
             {

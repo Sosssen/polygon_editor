@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace polygon_editor
 {
-    public partial class Form3 : Form
+    public partial class Form4 : Form
     {
-        public Form3()
+        public Form4()
         {
             InitializeComponent();
 
@@ -20,19 +20,17 @@ namespace polygon_editor
             this.MaximizeBox = false;
             this.MinimizeBox = false;
 
-            // TODO: count relations from all edges not only from selected
-            numericUpDown1.Maximum = polygon_editor.chosenPointRel.relations.Count;
+            domainUpDown1.Items.Add("5");
+            domainUpDown1.SelectedItem = "";
         }
 
         private void APPLY_Click(object sender, EventArgs e)
         {
-            polygon_editor.chosenRelation = Convert.ToInt32(numericUpDown1.Value);
             this.Close();
         }
 
         private void CANCEL_Click(object sender, EventArgs e)
         {
-            polygon_editor.chosenRelation = -1;
             this.Close();
         }
     }
