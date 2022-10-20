@@ -66,6 +66,8 @@ namespace polygon_editor
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
             SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 1;
 
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
@@ -226,6 +228,7 @@ namespace polygon_editor
                         Debug.WriteLine($"{edgeLength}");
                         //double a = (p1.Y - p2.Y) / (p1.X - p2.X);
                         //double b = p1.Y - a * p1.X;
+                        // TODO: maybe better precision?
                         double scale = edgeLength / temp;
                         double lengthX = p2.X - p1.X;
                         double lengthY = p2.Y - p1.Y;
@@ -365,15 +368,20 @@ namespace polygon_editor
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
             SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 1;
         }
 
+        // TODO: clearing points in every function, maybe clear it elsewhere?
         private void MODIFY_Click(object sender, EventArgs e)
         {
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = Color.LightBlue;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
             SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 2;
 
             points = new List<Point>();
@@ -386,6 +394,8 @@ namespace polygon_editor
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = Color.LightBlue;
             SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 3;
 
             points = new List<Point>();
@@ -398,7 +408,37 @@ namespace polygon_editor
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
             SET_LENGTH.BackColor = Color.LightBlue;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
             chosenButton = 4;
+
+            points = new List<Point>();
+            DrawCanvas();
+        }
+
+        private void ADD_REL_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = Color.LightBlue;
+            REMOVE_REL.BackColor = SystemColors.Control;
+            chosenButton = 5;
+
+            points = new List<Point>();
+            DrawCanvas();
+        }
+
+        private void REMOVE_REL_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = Color.LightBlue;
+            chosenButton = 6;
 
             points = new List<Point>();
             DrawCanvas();

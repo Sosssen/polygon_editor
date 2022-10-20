@@ -40,12 +40,15 @@ namespace polygon_editor
             this.MIDDLE_INSERT = new System.Windows.Forms.Button();
             this.SET_LENGTH = new System.Windows.Forms.Button();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.ADD_REL = new System.Windows.Forms.Button();
+            this.REMOVE_REL = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -186,6 +189,8 @@ namespace polygon_editor
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Controls.Add(this.ADD_REL, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.REMOVE_REL, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 445);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -193,6 +198,28 @@ namespace polygon_editor
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(376, 215);
             this.tableLayoutPanel5.TabIndex = 4;
+            // 
+            // ADD_REL
+            // 
+            this.ADD_REL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ADD_REL.Location = new System.Drawing.Point(3, 3);
+            this.ADD_REL.Name = "ADD_REL";
+            this.ADD_REL.Size = new System.Drawing.Size(182, 209);
+            this.ADD_REL.TabIndex = 0;
+            this.ADD_REL.Text = "dodaj relacje";
+            this.ADD_REL.UseVisualStyleBackColor = true;
+            this.ADD_REL.Click += new System.EventHandler(this.ADD_REL_Click);
+            // 
+            // REMOVE_REL
+            // 
+            this.REMOVE_REL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.REMOVE_REL.Location = new System.Drawing.Point(191, 3);
+            this.REMOVE_REL.Name = "REMOVE_REL";
+            this.REMOVE_REL.Size = new System.Drawing.Size(182, 209);
+            this.REMOVE_REL.TabIndex = 1;
+            this.REMOVE_REL.Text = "usuń relacje";
+            this.REMOVE_REL.UseVisualStyleBackColor = true;
+            this.REMOVE_REL.Click += new System.EventHandler(this.REMOVE_REL_Click);
             // 
             // polygon_editor
             // 
@@ -209,6 +236,7 @@ namespace polygon_editor
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -226,6 +254,8 @@ namespace polygon_editor
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.Button MIDDLE_INSERT;
         private System.Windows.Forms.Button SET_LENGTH;
+        private System.Windows.Forms.Button ADD_REL;
+        private System.Windows.Forms.Button REMOVE_REL;
     }
 }
 
