@@ -20,17 +20,29 @@ namespace polygon_editor
             this.MaximizeBox = false;
             this.MinimizeBox = false;
 
-            domainUpDown1.Items.Add("5");
-            domainUpDown1.SelectedItem = "";
+            if (polygon_editor.chosenPointRel.relations.Count == 0)
+            {
+                domainUpDown1.Items.Add("");
+            }
+            else
+            {
+                foreach (var number in polygon_editor.chosenPointRel.relations.Reverse())
+                {
+                    domainUpDown1.Items.Add(number.ToString());
+                }
+            }
+            domainUpDown1.SelectedIndex = polygon_editor.chosenPointRel.relations.Count - 1 >= 0 ? polygon_editor.chosenPointRel.relations.Count - 1 : 0;
         }
 
         private void APPLY_Click(object sender, EventArgs e)
         {
+            polygon_editor.chosenRelation = Convert.ToInt32(domainUpDown1.SelectedItem);
             this.Close();
         }
 
         private void CANCEL_Click(object sender, EventArgs e)
         {
+            polygon_editor.chosenRelation = -1;
             this.Close();
         }
     }

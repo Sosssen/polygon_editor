@@ -13,9 +13,11 @@ namespace polygon_editor
 {
     public partial class polygon_editor : Form
     {
+        // TODO: chosen -> selected
         public static double edgeLength = 0;
         public static MyPoint chosenPointRel = null;
         public static int chosenRelation = -1;
+        public static Dictionary<int, HashSet<MyPoint>> relationsDict = new Dictionary<int, HashSet<MyPoint>>();
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -268,6 +270,11 @@ namespace polygon_editor
                         if (chosenRelation != -1)
                         {
                             result.Item3.relations.Add(chosenRelation);
+                            if (!relationsDict.ContainsKey(chosenRelation))
+                            {
+                                relationsDict.Add(chosenRelation, new HashSet<MyPoint>());
+                            }
+                            relationsDict[chosenRelation].Add(result.Item3);
                         }
                     }
                 }
@@ -279,9 +286,21 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
+                        chosenPointRel = result.Item3;
+
                         Form4 form = new Form4();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
+
+                        if (chosenRelation != -1)
+                        {
+                            result.Item3.relations.Remove(chosenRelation);
+                            relationsDict[chosenRelation].Remove(result.Item3);
+                            if (relationsDict[chosenRelation].Count == 0)
+                            {
+                                relationsDict.Remove(chosenRelation);
+                            }
+                        }
                     }
                 }
             }

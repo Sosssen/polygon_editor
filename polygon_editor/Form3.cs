@@ -21,12 +21,25 @@ namespace polygon_editor
             this.MinimizeBox = false;
 
             // TODO: count relations from all edges not only from selected
-            numericUpDown1.Maximum = polygon_editor.chosenPointRel.relations.Count;
+            int minNotContained = -1;
+            for (int i = 0; i < polygon_editor.relationsDict.Count + 1; i++)
+            {
+                minNotContained = i;
+                if (!polygon_editor.relationsDict.ContainsKey(minNotContained)) break;
+            }
+            List<int> temp = polygon_editor.relationsDict.Keys.ToList();
+            temp.Add(minNotContained);
+            temp.Sort();
+            for (int i = temp.Count - 1; i >= 0; i--)
+            {
+                domainUpDown1.Items.Add(temp[i]);
+            }
+            domainUpDown1.SelectedIndex = temp.Count - 1;
         }
 
         private void APPLY_Click(object sender, EventArgs e)
         {
-            polygon_editor.chosenRelation = Convert.ToInt32(numericUpDown1.Value);
+            polygon_editor.chosenRelation = Convert.ToInt32(domainUpDown1.SelectedItem);
             this.Close();
         }
 

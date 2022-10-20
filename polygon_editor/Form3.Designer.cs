@@ -31,8 +31,7 @@ namespace polygon_editor
         {
             this.APPLY = new System.Windows.Forms.Button();
             this.CANCEL = new System.Windows.Forms.Button();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.domainUpDown1 = new System.Windows.Forms.DomainUpDown();
             this.SuspendLayout();
             // 
             // APPLY
@@ -55,13 +54,13 @@ namespace polygon_editor
             this.CANCEL.UseVisualStyleBackColor = true;
             this.CANCEL.Click += new System.EventHandler(this.CANCEL_Click);
             // 
-            // numericUpDown1
+            // domainUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(45, 12);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(240, 39);
-            this.numericUpDown1.TabIndex = 3;
-            this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.domainUpDown1.Location = new System.Drawing.Point(50, 12);
+            this.domainUpDown1.Name = "domainUpDown1";
+            this.domainUpDown1.Size = new System.Drawing.Size(240, 39);
+            this.domainUpDown1.TabIndex = 3;
+            this.domainUpDown1.Text = "domainUpDown1";
             // 
             // Form3
             // 
@@ -69,12 +68,11 @@ namespace polygon_editor
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(324, 129);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.domainUpDown1);
             this.Controls.Add(this.CANCEL);
             this.Controls.Add(this.APPLY);
             this.Name = "Form3";
             this.Text = "Form3";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -83,6 +81,6 @@ namespace polygon_editor
 
         private System.Windows.Forms.Button APPLY;
         private System.Windows.Forms.Button CANCEL;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.DomainUpDown domainUpDown1;
     }
 }
