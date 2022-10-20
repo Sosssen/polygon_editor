@@ -13,6 +13,8 @@ namespace polygon_editor
 {
     public partial class polygon_editor : Form
     {
+        public static double edgeLength = 0;
+
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
         private Pen redPen = new Pen(Color.Red, 6);
@@ -212,7 +214,27 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        
+                        Point p1 = result.Item3;
+                        Point p2 = result.Item4;
+                        // TODO: change result to p1,p2...
+                        edgeLength = getDistance(result.Item3.X, result.Item3.Y, result.Item4.X, result.Item4.Y);
+                        double temp = edgeLength;
+                        Form2 form = new Form2();
+                        form.StartPosition = FormStartPosition.CenterParent;
+                        form.ShowDialog(this);
+
+                        Debug.WriteLine($"{edgeLength}");
+                        //double a = (p1.Y - p2.Y) / (p1.X - p2.X);
+                        //double b = p1.Y - a * p1.X;
+                        double scale = edgeLength / temp;
+                        double lengthX = p2.X - p1.X;
+                        double lengthY = p2.Y - p1.Y;
+                        lengthX *= scale;
+                        lengthY *= scale;
+                        double x = p1.X + lengthX;
+                        double y = p1.Y + lengthY;
+                        result.Item2[result.Item2.IndexOf(p2)] = new Point((int)x, (int)y);
+
                     }
                 }
             }

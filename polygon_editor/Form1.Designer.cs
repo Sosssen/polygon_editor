@@ -38,8 +38,8 @@ namespace polygon_editor
             this.CREATE = new System.Windows.Forms.Button();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.MIDDLE_INSERT = new System.Windows.Forms.Button();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.SET_LENGTH = new System.Windows.Forms.Button();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -170,6 +170,17 @@ namespace polygon_editor
             this.MIDDLE_INSERT.UseVisualStyleBackColor = true;
             this.MIDDLE_INSERT.Click += new System.EventHandler(this.MIDDLE_INSERT_Click);
             // 
+            // SET_LENGTH
+            // 
+            this.SET_LENGTH.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SET_LENGTH.Location = new System.Drawing.Point(191, 3);
+            this.SET_LENGTH.Name = "SET_LENGTH";
+            this.SET_LENGTH.Size = new System.Drawing.Size(182, 209);
+            this.SET_LENGTH.TabIndex = 1;
+            this.SET_LENGTH.Text = "zmień rozmiar krawędzi";
+            this.SET_LENGTH.UseVisualStyleBackColor = true;
+            this.SET_LENGTH.Click += new System.EventHandler(this.SET_LENGTH_Click);
+            // 
             // tableLayoutPanel5
             // 
             this.tableLayoutPanel5.ColumnCount = 2;
@@ -182,17 +193,6 @@ namespace polygon_editor
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(376, 215);
             this.tableLayoutPanel5.TabIndex = 4;
-            // 
-            // SET_LENGTH
-            // 
-            this.SET_LENGTH.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SET_LENGTH.Location = new System.Drawing.Point(191, 3);
-            this.SET_LENGTH.Name = "SET_LENGTH";
-            this.SET_LENGTH.Size = new System.Drawing.Size(182, 209);
-            this.SET_LENGTH.TabIndex = 1;
-            this.SET_LENGTH.Text = "zmień rozmiar krawędzi";
-            this.SET_LENGTH.UseVisualStyleBackColor = true;
-            this.SET_LENGTH.Click += new System.EventHandler(this.SET_LENGTH_Click);
             // 
             // polygon_editor
             // 
