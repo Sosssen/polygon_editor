@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+// TODO: predefined canva with 2 polygons
+// TODO: maybe button to create new, plain canva?
+
 namespace polygon_editor
 {
     public partial class polygon_editor : Form
@@ -242,6 +245,7 @@ namespace polygon_editor
                         //double a = (p1.Y - p2.Y) / (p1.X - p2.X);
                         //double b = p1.Y - a * p1.X;
                         // TODO: maybe better precision?
+                        result.Item3.length = edgeLength;
                         double scale = edgeLength / temp;
                         double lengthX = p2.x - p1.x;
                         double lengthY = p2.y - p1.y;
@@ -599,8 +603,10 @@ namespace polygon_editor
                 }
                 else if (moving == 1)
                 {
-                    polygons[pointToMove.Item1][pointToMove.Item2].x = e.X;
-                    polygons[pointToMove.Item1][pointToMove.Item2].y = e.Y;
+                    MyPoint p = polygons[pointToMove.Item1][pointToMove.Item2];
+                    p.x = e.X;
+                    p.y = e.Y;
+                    correctPointByLength(polygons[pointToMove.Item1]);
                 }
                 else if (moving == 2)
                 {
@@ -810,12 +816,43 @@ namespace polygon_editor
             // If they are not collinear, they must intersect in exactly one point.
             return 1;
         }
+
+        void correctPointByLength(List<MyPoint> polygon)
+        {
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                if (polygon[i].length != -1.0)
+                {
+                    MyPoint p = polygon[(i + 1) % polygon.Count];
+                    double dist = getDistance(polygon[i].x, polygon[i].y, p.x, p.y);
+                    double scale = polygon[i].length / dist;
+                    double lengthX = p.x - polygon[i].x;
+                    double lengthY = p.y - polygon[i].y;
+                    lengthX *= scale;
+                    lengthY *= scale;
+                    p.x = (int)(polygon[i].x + lengthX);
+                    p.y = (int)(polygon[i].y + lengthY);
+                    //    result.Item3.length = edgeLength;
+                    //double scale = edgeLength / temp;
+                    //double lengthX = p2.x - p1.x;
+                    //double lengthY = p2.y - p1.y;
+                    //lengthX *= scale;
+                    //lengthY *= scale;
+                    //double x = p1.x + lengthX;
+                    //double y = p1.y + lengthY;
+                }
+            }
+        }
+
+        // TODO: add length field - when set, moving an edge doesn't change its length
         public class MyPoint
         {
             // TODO: change to setters?
             // TODO: make new List<int> not to be in every constructor
             public int x;
             public int y;
+            public double length = -1.0;
+            // public double lengthPrev = -1.0;
 
             public HashSet<int> relations = new HashSet<int>();
 
