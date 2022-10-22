@@ -223,6 +223,7 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
+                        result.Item3.length = -1.0;
                         MyPoint newPoint = new MyPoint((result.Item3.x + result.Item4.x) / 2, (result.Item3.y + result.Item4.y) / 2);
                         int i = result.Item2.IndexOf(result.Item3);
                         result.Item2.Insert(i + 1, newPoint);
