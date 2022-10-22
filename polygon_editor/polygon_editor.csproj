@@ -6,4 +6,10 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Graphs">
+      <HintPath>..\..\..\..\Desktop\Graphs.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

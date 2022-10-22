@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ASD.Graphs;
 
 // TODO: predefined canva with 2 polygons
 // TODO: maybe button to create new, plain canva?
@@ -22,6 +23,7 @@ namespace polygon_editor
         public static MyPoint chosenPointRel = null;
         public static int chosenRelation = -1;
         public static Dictionary<int, HashSet<MyPoint>> relationsDict = new Dictionary<int, HashSet<MyPoint>>();
+        Graph relationsGraph = null;
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -58,6 +60,17 @@ namespace polygon_editor
         public polygon_editor()
         {
             InitializeComponent();
+
+            Graph graph = new Graph(4);
+            graph.AddEdge(1, 2);
+            graph.AddEdge(0, 1);
+            graph.AddEdge(2, 3);
+            // graph.AddEdge(0, 3);
+
+            if (isAcyclic(graph))
+                Debug.WriteLine("Graph doesn't contain cycle");
+            else
+                Debug.WriteLine("Graph contains cycle");
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
@@ -277,6 +290,7 @@ namespace polygon_editor
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
 
+                        // TODO: can't add more than 2 edges to 1 relation
                         if (chosenRelation != -1)
                         {
                             result.Item3.relations.Add(chosenRelation);
@@ -865,6 +879,41 @@ namespace polygon_editor
             return true;
         }
 
+        public bool isAcyclic(Graph g)
+        {
+
+            ASD.PriorityQueue<int, Edge> queue = new ASD.PriorityQueue<int, Edge>();
+
+
+            foreach (var e in g.DFS().SearchAll())
+            {
+                if (e.From > e.To)
+                {
+                    queue.Insert(e, 1);
+                }
+            }
+
+
+
+            ASD.UnionFind uf = new ASD.UnionFind(g.VertexCount);
+
+            while (queue.Count > 0)
+            {
+                var e = queue.Extract();
+                if (uf.Find(e.From) != uf.Find(e.To))
+                {
+                    uf.Union(e.From, e.To);
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+
+            return true;
+        }
+
         // TODO: add length field - when set, moving an edge doesn't change its length
         public class MyPoint
         {
@@ -896,6 +945,16 @@ namespace polygon_editor
             }
 
             public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
+        }
+
+        void createNewGraph()
+        {
+            int counter = 0;
+            foreach (var polygon in polygons)
+            {
+                counter += polygon.Count;
+            }
+            relationsGraph = new Graph(counter);
         }
     }
 }
