@@ -25,12 +25,14 @@ namespace polygon_editor
 
         private void CANCEL_Click(object sender, EventArgs e)
         {
+            polygon_editor.edgeLengthChanged = false;
             this.Close();
         }
 
         // TODO: why this button is highlighted?
         private void APPLY_Click(object sender, EventArgs e)
         {
+            polygon_editor.edgeLengthChanged = true;
             polygon_editor.edgeLength = Convert.ToDouble(textBox.Text);
             this.Close();
         }

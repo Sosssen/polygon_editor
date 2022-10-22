@@ -18,6 +18,7 @@ namespace polygon_editor
     {
         // TODO: chosen -> selected
         public static double edgeLength = 0;
+        public static bool edgeLengthChanged = false;
         public static MyPoint chosenPointRel = null;
         public static int chosenRelation = -1;
         public static Dictionary<int, HashSet<MyPoint>> relationsDict = new Dictionary<int, HashSet<MyPoint>>();
@@ -180,6 +181,8 @@ namespace polygon_editor
                     var result = FindPointInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
+                        int idx = result.Item2.IndexOf(result.Item3);
+                        result.Item2[(idx - 1) % result.Item2.Count].length = -1.0;
                         result.Item2.Remove(result.Item3);
 
                         if (result.Item2.Count < 3)
@@ -192,6 +195,8 @@ namespace polygon_editor
                         var result2 = FindEdgeInPolygons(e.X, e.Y);
                         if (result2.Item1)
                         {
+                            int idx = result2.Item2.IndexOf(result2.Item3);
+                            result2.Item2[(idx - 1) % result2.Item2.Count].length = -1.0;
                             result2.Item2.Remove(result2.Item3);
                             result2.Item2.Remove(result2.Item4);
 
@@ -235,25 +240,25 @@ namespace polygon_editor
                         MyPoint p1 = result.Item3;
                         MyPoint p2 = result.Item4;
                         // TODO: change result to p1,p2...
-                        edgeLength = getDistance(result.Item3.x, result.Item3.y, result.Item4.x, result.Item4.y);
-                        double temp = edgeLength;
+                        edgeLength = getDistance(p1.x, p1.y, p2.x, p2.y);
                         Form2 form = new Form2();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog(this);
 
                         Debug.WriteLine($"{edgeLength}");
-                        //double a = (p1.Y - p2.Y) / (p1.X - p2.X);
-                        //double b = p1.Y - a * p1.X;
+                        if (edgeLengthChanged)
+                        {
+                            if (checkIfCanAddNewLength(result.Item2))
+                            {
+                                result.Item3.length = edgeLength;
+                                correctPointByLength(result.Item2);
+                            }
+                            else
+                            {
+                                MessageBox.Show("za dużo ograniczonych krawędzi", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
                         // TODO: maybe better precision?
-                        result.Item3.length = edgeLength;
-                        double scale = edgeLength / temp;
-                        double lengthX = p2.x - p1.x;
-                        double lengthY = p2.y - p1.y;
-                        lengthX *= scale;
-                        lengthY *= scale;
-                        double x = p1.x + lengthX;
-                        double y = p1.y + lengthY;
-                        result.Item2[result.Item2.IndexOf(p2)] = new MyPoint((int)x, (int)y);
 
                     }
                 }
@@ -437,23 +442,30 @@ namespace polygon_editor
                 {
                     for (int i = 0; i < polygon.Count; i++)
                     {
+                        string text = "";
                         if (polygon[i].relations.Count > 0)
                         {
-                            Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
-                            string text = "";
+                            
                             foreach (var number in polygon[i].relations)
                             {
                                 text += number.ToString();
                                 text += " ";
                             }
-                            text = text.Substring(0, text.Length - 1);
-                            using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
-                            {
-                                StringFormat sf = new StringFormat();
-                                sf.LineAlignment = StringAlignment.Center;
-                                sf.Alignment = StringAlignment.Center;
-                                g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
-                            }
+                            // text = text.Substring(0, text.Length - 1);
+                            
+                        }
+                        if (polygon[i].length != -1.0)
+                        {
+                            text += "len. = ";
+                            text += polygon[i].length.ToString();
+                        }
+                        Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
+                        using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
+                        {
+                            StringFormat sf = new StringFormat();
+                            sf.LineAlignment = StringAlignment.Center;
+                            sf.Alignment = StringAlignment.Center;
+                            g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
                         }
                     }
                 }
@@ -622,6 +634,7 @@ namespace polygon_editor
                     polygons[edgeToMove.Item1][edgeToMove.Item2].y = a.y;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].x = b.x;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].y = b.y;
+                    correctPointByLength(polygons[edgeToMove.Item1]);
                 }
                 else if (moving == 3)
                 {
@@ -636,6 +649,7 @@ namespace polygon_editor
                         polygonToMove[i].x = temp.x;
                         polygonToMove[i].y = temp.y;
                     }
+                    correctPointByLength(polygonToMove);
                 }
             }
             else if (chosenButton == 3)
@@ -832,16 +846,22 @@ namespace polygon_editor
                     lengthY *= scale;
                     p.x = (int)(polygon[i].x + lengthX);
                     p.y = (int)(polygon[i].y + lengthY);
-                    //    result.Item3.length = edgeLength;
-                    //double scale = edgeLength / temp;
-                    //double lengthX = p2.x - p1.x;
-                    //double lengthY = p2.y - p1.y;
-                    //lengthX *= scale;
-                    //lengthY *= scale;
-                    //double x = p1.x + lengthX;
-                    //double y = p1.y + lengthY;
                 }
             }
+        }
+
+        bool checkIfCanAddNewLength(List<MyPoint> polygon)
+        {
+            int counter = 0;
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                if (polygon[i].length != -1.0)
+                {
+                    counter++;
+                }
+            }
+            if (counter == polygon.Count - 1) return false;
+            return true;
         }
 
         // TODO: add length field - when set, moving an edge doesn't change its length
