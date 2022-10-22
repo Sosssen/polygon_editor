@@ -26,10 +26,12 @@ namespace polygon_editor
             }
             else
             {
-                foreach (var number in polygon_editor.chosenPointRel.relations.Reverse())
+                polygon_editor.chosenPointRel.relations.Reverse();
+                foreach (var number in polygon_editor.chosenPointRel.relations)
                 {
                     domainUpDown1.Items.Add(number.ToString());
                 }
+                polygon_editor.chosenPointRel.relations.Reverse();
             }
             domainUpDown1.SelectedIndex = polygon_editor.chosenPointRel.relations.Count - 1 >= 0 ? polygon_editor.chosenPointRel.relations.Count - 1 : 0;
         }

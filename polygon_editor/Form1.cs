@@ -22,8 +22,9 @@ namespace polygon_editor
         public static bool edgeLengthChanged = false;
         public static MyPoint chosenPointRel = null;
         public static int chosenRelation = -1;
-        public static Dictionary<int, HashSet<MyPoint>> relationsDict = new Dictionary<int, HashSet<MyPoint>>();
+        public static Dictionary<int, List<MyPoint>> relationsDict = new Dictionary<int, List<MyPoint>>();
         Graph relationsGraph = null;
+        List<MyPoint> allPoints = null;
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -122,6 +123,7 @@ namespace polygon_editor
                             else
                             {
                                 polygons.Add(points);
+                                createNewGraph();
                                 points = new List<MyPoint>();
                             }
                         }
@@ -293,12 +295,44 @@ namespace polygon_editor
                         // TODO: can't add more than 2 edges to 1 relation
                         if (chosenRelation != -1)
                         {
-                            result.Item3.relations.Add(chosenRelation);
                             if (!relationsDict.ContainsKey(chosenRelation))
                             {
-                                relationsDict.Add(chosenRelation, new HashSet<MyPoint>());
+                                relationsDict.Add(chosenRelation, new List<MyPoint>());
+                                relationsDict[chosenRelation].Add(result.Item3);
+                                result.Item3.relations.Add(chosenRelation);
                             }
-                            relationsDict[chosenRelation].Add(result.Item3);
+                            else
+                            {
+                                if (relationsDict[chosenRelation].Contains(result.Item3))
+                                {
+                                    MessageBox.Show("taka relacja już istnieje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    if (relationsDict[chosenRelation].Count == 2)
+                                    {
+                                        MessageBox.Show("już są 2 relacje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else
+                                    {
+                                        int idx1 = allPoints.IndexOf(relationsDict[chosenRelation][0]);
+                                        int idx2 = allPoints.IndexOf(result.Item3);
+                                        relationsGraph.AddEdge(idx1, idx2);
+                                        if (!isAcyclic(relationsGraph))
+                                        {
+                                            MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            relationsGraph.RemoveEdge(idx1, idx2);
+                                        }
+                                        else
+                                        {
+                                            relationsDict[chosenRelation].Add(result.Item3);
+                                            result.Item3.relations.Add(chosenRelation);
+                                            result.Item3.relations.Sort();
+                                        }         
+                                    }
+                                }
+                            }
+                            // relationsDict[chosenRelation].Add(result.Item3);
                         }
                     }
                 }
@@ -924,7 +958,7 @@ namespace polygon_editor
             public double length = -1.0;
             // public double lengthPrev = -1.0;
 
-            public HashSet<int> relations = new HashSet<int>();
+            public List<int> relations = new List<int>();
 
             public MyPoint()
             {
@@ -955,6 +989,23 @@ namespace polygon_editor
                 counter += polygon.Count;
             }
             relationsGraph = new Graph(counter);
+            allPoints = new List<MyPoint>();
+            foreach (var polygon in polygons)
+            {
+                foreach (var point in polygon)
+                {
+                    allPoints.Add(point);
+                }
+            }
+            foreach (var key in relationsDict.Keys)
+            {
+                if (relationsDict[key].Count == 2)
+                {
+                    int idx1 = allPoints.IndexOf(relationsDict[key][0]);
+                    int idx2 = allPoints.IndexOf(relationsDict[key][1]);
+                    relationsGraph.AddEdge(idx1, idx2);
+                }
+            }
         }
     }
 }
