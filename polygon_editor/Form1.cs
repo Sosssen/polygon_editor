@@ -37,7 +37,7 @@ namespace polygon_editor
         private int chosenButton;
 
         private List<MyPoint> points = new List<MyPoint>();
-        private List<List<MyPoint>> polygons = new List<List<MyPoint>>();
+        public static List<List<MyPoint>> polygons = new List<List<MyPoint>>();
 
         private const int radius = 4;
 
@@ -289,7 +289,6 @@ namespace polygon_editor
                                     relationsDict.Add(chosenRelation, new List<MyPoint>());
                                     relationsDict[chosenRelation].Add(result.Item3);
                                     result.Item3.relations.Add(chosenRelation);
-                                    sortRelations();
                                 }
                                 else
                                 {
@@ -305,8 +304,9 @@ namespace polygon_editor
                                         }
                                         else
                                         {
-                                            int idx1 = allPoints.IndexOf(relationsDict[chosenRelation][0]);
-                                            int idx2 = allPoints.IndexOf(result.Item3);
+                                            createNewGraph();
+                                            int idx1 = relationsDict[chosenRelation][0].countIndex();
+                                            int idx2 = result.Item3.countIndex();
                                             relationsGraph.AddEdge(idx1, idx2);
                                             if (!isAcyclic(relationsGraph))
                                             {
@@ -316,9 +316,9 @@ namespace polygon_editor
                                             else
                                             {
                                                 relationsDict[chosenRelation].Add(result.Item3);
+                                                sortRelations();
                                                 result.Item3.relations.Add(chosenRelation);
                                                 result.Item3.relations.Sort();
-                                                sortRelations();
                                             }
                                         }
                                     }
@@ -528,7 +528,7 @@ namespace polygon_editor
                                 text += polygon[i].length.ToString();
                             }
                             text += " idx: ";
-                            text += polygon[i].index.ToString();
+                            text += polygon[i].countIndex().ToString();
                             Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
                             using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
                             {
@@ -908,6 +908,20 @@ namespace polygon_editor
             return 1;
         }
 
+        void sortRelations()
+        {
+            foreach (var key in relationsDict.Keys)
+            {
+                if (relationsDict[key].Count == 2 && relationsDict[key][1].countIndex() < relationsDict[key][0].countIndex())
+                {
+                    MyPoint temp = relationsDict[key][0];
+                    relationsDict[key][0] = relationsDict[key][1];
+                    relationsDict[key][1] = temp;
+                    Debug.WriteLine("sorted");
+                }
+            }
+        }
+
         // TODO: no arguments there
         // TODO: start from edge with clear edge
         void correctPointByLength(List<MyPoint> jkasdbf)
@@ -948,7 +962,7 @@ namespace polygon_editor
                     {
                         relations[relation]++;
                         if (relations[relation] == 1) continue;
-                        Debug.WriteLine("wchodze");
+                        Debug.WriteLine($"wchodze, relacja {relation}, punkt: {polygon[newIdx].x}, {polygon[newIdx].y}");
                         MyPoint p1 = relationsDict[relation][0];
                         List<MyPoint> polygonWithP1 = null;
                         foreach (var p in polygons)
@@ -1028,20 +1042,6 @@ namespace polygon_editor
             return true;
         }
 
-        void sortRelations()
-        {
-            foreach (var key in relationsDict.Keys)
-            {
-                if (relationsDict[key].Count == 2 && relationsDict[key][1].index < relationsDict[key][0].index)
-                {
-                    MyPoint temp = relationsDict[key][0];
-                    relationsDict[key][0] = relationsDict[key][1];
-                    relationsDict[key][1] = temp;
-                    Debug.WriteLine("sorted");
-                }
-            }
-        }
-
         public bool isAcyclic(Graph g)
         {
 
@@ -1077,16 +1077,13 @@ namespace polygon_editor
             return true;
         }
 
-        // TODO: add length field - when set, moving an edge doesn't change its length
         public class MyPoint
         {
             // TODO: change to setters?
-            // TODO: make new List<int> not to be in every constructor
             public int x;
             public int y;
             public int index = -1;
             public double length = -1.0;
-            // public double lengthPrev = -1.0;
 
             public List<int> relations = new List<int>();
 
@@ -1108,6 +1105,36 @@ namespace polygon_editor
                 this.y = p.y;
             }
 
+            public int countIndex()
+            {
+                int ret = 0;
+                foreach (var polygon in polygon_editor.polygons)
+                {
+                    int idx;
+                    for (idx = 0; idx < polygon.Count; idx++)
+                    {
+                        if (polygon[idx].length != -1.0) continue;
+                        bool mark = false;
+                        foreach (var key in relationsDict.Keys)
+                        {
+                            if (relationsDict[key][0] == polygon[idx] || (relationsDict[key].Count == 2 && relationsDict[key][1] == polygon[idx]))
+                            {
+                                mark = true;
+                                break;
+                            }
+                        }
+                        if (mark) continue;
+                        break;
+                    }
+                    for (int i = 0; i < polygon.Count; i++)
+                    {
+                        if (polygon[(idx + i) % polygon.Count] == this) return ret;
+                        ret++;
+                    }
+                }
+                return -1;
+            }
+
             public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
         }
 
@@ -1120,23 +1147,12 @@ namespace polygon_editor
                 counter += polygon.Count;
             }
             relationsGraph = new Graph(counter);
-            allPoints = new List<MyPoint>();
-            counter = 0;
-            foreach (var polygon in polygons)
-            {
-                foreach (var point in polygon)
-                {
-                    allPoints.Add(point);
-                    point.index = counter;
-                    counter++;
-                }
-            }
             foreach (var key in relationsDict.Keys)
             {
                 if (relationsDict[key].Count == 2)
                 {
-                    int idx1 = allPoints.IndexOf(relationsDict[key][0]);
-                    int idx2 = allPoints.IndexOf(relationsDict[key][1]);
+                    int idx1 = relationsDict[key][0].countIndex();
+                    int idx2 = relationsDict[key][1].countIndex();
                     relationsGraph.AddEdge(idx1, idx2);
                 }
             }
