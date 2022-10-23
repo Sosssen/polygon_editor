@@ -17,6 +17,7 @@ namespace polygon_editor
 {
     public partial class polygon_editor : Form
     {
+        Random rnd = new Random();
         // TODO: chosen -> selected
         public static double edgeLength = 0;
         public static bool edgeLengthChanged = false;
@@ -61,17 +62,6 @@ namespace polygon_editor
         public polygon_editor()
         {
             InitializeComponent();
-
-            Graph graph = new Graph(4);
-            graph.AddEdge(1, 2);
-            graph.AddEdge(0, 1);
-            graph.AddEdge(2, 3);
-            // graph.AddEdge(0, 3);
-
-            if (isAcyclic(graph))
-                Debug.WriteLine("Graph doesn't contain cycle");
-            else
-                Debug.WriteLine("Graph contains cycle");
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
@@ -136,9 +126,6 @@ namespace polygon_editor
                     {
                         points.Add(new MyPoint(e.X, e.Y));
                     }
-
-                    System.Diagnostics.Debug.WriteLine($"points = {points.Count}");
-                    System.Diagnostics.Debug.WriteLine($"polygons = {polygons.Count}");
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
@@ -156,7 +143,6 @@ namespace polygon_editor
                         moving = 1;
                         int indexOfPolygon = polygons.IndexOf(result.Item2);
                         pointToMove = (indexOfPolygon, polygons[indexOfPolygon].IndexOf(result.Item3));
-                        Debug.WriteLine($"{pointToMove.Item1}, {pointToMove.Item2}");
                     }
                     else
                     {
@@ -170,7 +156,6 @@ namespace polygon_editor
                             startingPointA = new MyPoint(polygons[edgeToMove.Item1][edgeToMove.Item2]);
                             startingPointB = new MyPoint(polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count]);
                             
-                            // Debug.WriteLine($"P1: {pointToMove1.Item1}, {pointToMove1.Item2}, P2: {pointToMove2.Item1}, {pointToMove2.Item2}");
                         }
                         else
                         {
@@ -261,7 +246,6 @@ namespace polygon_editor
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog(this);
 
-                        Debug.WriteLine($"{edgeLength}");
                         if (edgeLengthChanged)
                         {
                             if (checkIfCanAddNewLength(result.Item2))
@@ -295,47 +279,61 @@ namespace polygon_editor
                         // TODO: can't add more than 2 edges to 1 relation
                         if (chosenRelation != -1)
                         {
-                            if (!relationsDict.ContainsKey(chosenRelation))
+                            if (checkIfCanAddNewRelation(result.Item2) || result.Item3.relations.Count > 0)
                             {
-                                relationsDict.Add(chosenRelation, new List<MyPoint>());
-                                relationsDict[chosenRelation].Add(result.Item3);
-                                result.Item3.relations.Add(chosenRelation);
-                            }
-                            else
-                            {
-                                if (relationsDict[chosenRelation].Contains(result.Item3))
+
+
+                                if (!relationsDict.ContainsKey(chosenRelation))
                                 {
-                                    MessageBox.Show("taka relacja już istnieje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    relationsDict.Add(chosenRelation, new List<MyPoint>());
+                                    relationsDict[chosenRelation].Add(result.Item3);
+                                    result.Item3.relations.Add(chosenRelation);
+                                    sortRelations();
                                 }
                                 else
                                 {
-                                    if (relationsDict[chosenRelation].Count == 2)
+                                    if (relationsDict[chosenRelation].Contains(result.Item3))
                                     {
-                                        MessageBox.Show("już są 2 relacje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBox.Show("taka relacja już istnieje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                     else
                                     {
-                                        int idx1 = allPoints.IndexOf(relationsDict[chosenRelation][0]);
-                                        int idx2 = allPoints.IndexOf(result.Item3);
-                                        relationsGraph.AddEdge(idx1, idx2);
-                                        if (!isAcyclic(relationsGraph))
+                                        if (relationsDict[chosenRelation].Count == 2)
                                         {
-                                            MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                            relationsGraph.RemoveEdge(idx1, idx2);
+                                            MessageBox.Show("już są 2 relacje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         }
                                         else
                                         {
-                                            relationsDict[chosenRelation].Add(result.Item3);
-                                            result.Item3.relations.Add(chosenRelation);
-                                            result.Item3.relations.Sort();
-                                        }         
+                                            int idx1 = allPoints.IndexOf(relationsDict[chosenRelation][0]);
+                                            int idx2 = allPoints.IndexOf(result.Item3);
+                                            relationsGraph.AddEdge(idx1, idx2);
+                                            if (!isAcyclic(relationsGraph))
+                                            {
+                                                MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                relationsGraph.RemoveEdge(idx1, idx2);
+                                            }
+                                            else
+                                            {
+                                                relationsDict[chosenRelation].Add(result.Item3);
+                                                result.Item3.relations.Add(chosenRelation);
+                                                result.Item3.relations.Sort();
+                                                sortRelations();
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            else
+                            {
+                                MessageBox.Show("za dużo relacji", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                             // relationsDict[chosenRelation].Add(result.Item3);
                         }
+                        correctPointByLength(result.Item2);
                     }
+                    
                 }
+                printRelations();
             }
             else if (chosenButton == 6)
             {
@@ -361,11 +359,29 @@ namespace polygon_editor
                         }
                     }
                 }
+                correctPointByLength(null);
+                printRelations();
             }
 
 
             DrawCanvas(e.X, e.Y);
 
+        }
+
+        void printRelations()
+        {
+
+            foreach (var key in relationsDict.Keys)
+            {
+                if (relationsDict[key].Count == 1)
+                {
+                    Debug.WriteLine($"key:{key}, idx:{relationsDict[key][0].index}");
+                }
+                else
+                {
+                    Debug.WriteLine($"key:{key}, idx1:{relationsDict[key][0].index}, idx2:{relationsDict[key][1].index}");
+                }
+            }
         }
 
         private (bool, MyPoint) FindPointInPoints(int mouseX, int mouseY)
@@ -391,133 +407,146 @@ namespace polygon_editor
 
         void DrawCanvas(int mouseX = 0, int mouseY = 0)
         {
-            drawArea.Dispose();
-            drawArea = new Bitmap(Canvas.Width, Canvas.Height);
-            Canvas.Image = drawArea;
-            using (Graphics g = Graphics.FromImage(drawArea))
+            try
             {
-                g.Clear(Color.White);
-            }
-            // Debug.WriteLine("test");
-
-            using (Graphics g = Graphics.FromImage(drawArea))
-            {
-                // draw all poygons
-                foreach (var polygon in polygons)
+                drawArea.Dispose();
+                drawArea = new Bitmap(Canvas.Width, Canvas.Height);
+                Canvas.Image = drawArea;
+                using (Graphics g = Graphics.FromImage(drawArea))
                 {
-                    MyPoint[] arr = polygon.ToArray();
-                    Point[] newArr = new Point[arr.Length];
-                    for (int i = 0; i < arr.Length; i++)
-                    {
-                        newArr[i] = arr[i];
-                    }
+                    g.Clear(Color.White);
+                }
 
-                    if (colorEdge)
+                using (Graphics g = Graphics.FromImage(drawArea))
+                {
+                    // draw all poygons
+                    foreach (var polygon in polygons)
                     {
-                        for (int i = 0; i < polygon.Count; i++)
+                        MyPoint[] arr = polygon.ToArray();
+                        Point[] newArr = new Point[arr.Length];
+                        for (int i = 0; i < arr.Length; i++)
                         {
-                            if (polygon[i] == edgeToColor)
+                            newArr[i] = arr[i];
+                        }
+
+                        if (colorEdge)
+                        {
+                            for (int i = 0; i < polygon.Count; i++)
                             {
-                                Debug.WriteLine("rysuje inna krawedz");
-                                g.DrawLine(redPen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                if (polygon[i] == edgeToColor)
+                                {
+                                    g.DrawLine(redPen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                }
+                                else
+                                {
+                                    g.DrawLine(pen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                }
+                            }
+                        }
+                        else if (colorPolygon)
+                        {
+                            if (polygon == polygonToColor)
+                            {
+                                g.DrawPolygon(redPen, newArr);
                             }
                             else
                             {
-                                g.DrawLine(pen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                g.DrawPolygon(pen, newArr);
                             }
-                        }
-                    }
-                    else if (colorPolygon)
-                    {
-                        if (polygon == polygonToColor)
-                        {
-                            g.DrawPolygon(redPen, newArr);
                         }
                         else
                         {
+
                             g.DrawPolygon(pen, newArr);
+
                         }
-                    }
-                    else
-                    {
-                        g.DrawPolygon(pen, newArr);
-                    }
 
-                    foreach (var point in polygon)
-                    {
-                        if (chosenButton == 2 && colorPoint && point == pointToColor)
+                        foreach (var point in polygon)
                         {
-                            g.DrawEllipse(pen, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
-                            g.FillEllipse(sbRed, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
+                            if (chosenButton == 2 && colorPoint && point == pointToColor)
+                            {
+                                g.DrawEllipse(pen, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
+                                g.FillEllipse(sbRed, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
 
+                            }
+                            else
+                            {
+                                g.DrawEllipse(pen, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                                g.FillEllipse(sbBlack, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                            }
+                        }
+
+
+                    }
+                }
+                using (Graphics g = Graphics.FromImage(drawArea))
+                {
+                    // connect all points that are not yet in any polygon
+                    for (int i = 0; i < points.Count - 1; i++)
+                    {
+                        g.DrawLine(pen, points[i], points[i + 1]);
+                    }
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
+                        {
+                            g.DrawEllipse(pen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
+                            g.FillEllipse(sbGreen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
                         }
                         else
                         {
-                            g.DrawEllipse(pen, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
-                            g.FillEllipse(sbBlack, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                            g.DrawEllipse(pen, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
+                            g.FillEllipse(sbBlack, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
                         }
+
                     }
-                    
-                    
+                    // draw line to mouse while creating new polygon
+                    if (chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
                 }
-            }
-            using (Graphics g = Graphics.FromImage(drawArea))
-            {
-                // connect all points that are not yet in any polygon
-                for(int i = 0; i < points.Count - 1; i++)
+                using (Graphics g = Graphics.FromImage(drawArea))
                 {
-                    g.DrawLine(pen, points[i], points[i + 1]);
-                }
-                for(int i = 0; i < points.Count; i++)
-                {
-                    if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
+                    foreach (var polygon in polygons)
                     {
-                        g.DrawEllipse(pen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
-                        g.FillEllipse(sbGreen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
-                    }
-                    else
-                    {
-                        g.DrawEllipse(pen, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
-                        g.FillEllipse(sbBlack, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
-                    }
-                    
-                }
-                // draw line to mouse while creating new polygon
-                if(chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
-            }
-            using (Graphics g = Graphics.FromImage(drawArea))
-            {
-                foreach (var polygon in polygons)
-                {
-                    for (int i = 0; i < polygon.Count; i++)
-                    {
-                        string text = "";
-                        if (polygon[i].relations.Count > 0)
+                        for (int i = 0; i < polygon.Count; i++)
                         {
-                            
-                            foreach (var number in polygon[i].relations)
+                            string text = "";
+                            if (polygon[i].relations.Count > 0)
                             {
-                                text += number.ToString();
-                                text += " ";
+
+                                foreach (var number in polygon[i].relations)
+                                {
+                                    text += number.ToString();
+                                    text += " ";
+                                }
+                                // text = text.Substring(0, text.Length - 1);
+
                             }
-                            // text = text.Substring(0, text.Length - 1);
-                            
-                        }
-                        if (polygon[i].length != -1.0)
-                        {
-                            text += "len. = ";
-                            text += polygon[i].length.ToString();
-                        }
-                        Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
-                        using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
-                        {
-                            StringFormat sf = new StringFormat();
-                            sf.LineAlignment = StringAlignment.Center;
-                            sf.Alignment = StringAlignment.Center;
-                            g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
+                            if (polygon[i].length != -1.0)
+                            {
+                                text += "len. = ";
+                                text += polygon[i].length.ToString();
+                            }
+                            //text += " idx: ";
+                            //text += polygon[i].index.ToString();
+                            Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
+                            using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
+                            {
+                                StringFormat sf = new StringFormat();
+                                sf.LineAlignment = StringAlignment.Center;
+                                sf.Alignment = StringAlignment.Center;
+                                g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
+                            }
                         }
                     }
                 }
+            }
+            catch(OverflowException e)
+            {
+                MessageBox.Show("wierzchołek znalazł się zbyt daleko miejsca do rysowania", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                polygons[pointToMove.Item1][pointToMove.Item2].x = mouseX;
+                polygons[pointToMove.Item1][pointToMove.Item2].y = mouseY;
+                correctPointByLength(polygons[pointToMove.Item1]);
+                moving = 0;
             }
         }
 
@@ -806,7 +835,6 @@ namespace polygon_editor
         private (bool, List<MyPoint>) FindPolygon(int x ,int y)
         {
             int counter;
-            Debug.WriteLine("run findpolygon");
             foreach (var polygon in polygons)
             {
                 counter = 0;
@@ -816,7 +844,6 @@ namespace polygon_editor
                     MyPoint B = polygon[(i + 1) % polygon.Count];
                     if (areIntersecting(0, 0, x, y, A.x, A.y, B.x, B.y) == 1) counter++;
                 }
-                Debug.WriteLine($"Polygon number {polygons.IndexOf(polygon)}, counter: {counter}");
                 if (counter % 2 == 1) return (true, polygon);
             }
             return (false, null);
@@ -880,21 +907,67 @@ namespace polygon_editor
             return 1;
         }
 
-        void correctPointByLength(List<MyPoint> polygon)
+        // TODO: no arguments there
+        void correctPointByLength(List<MyPoint> jkasdbf)
         {
-            for (int i = 0; i < polygon.Count; i++)
+            foreach (var polygon in polygons)
             {
-                if (polygon[i].length != -1.0)
+                for (int i = 0; i < polygon.Count; i++)
                 {
-                    MyPoint p = polygon[(i + 1) % polygon.Count];
-                    double dist = getDistance(polygon[i].x, polygon[i].y, p.x, p.y);
-                    double scale = polygon[i].length / dist;
-                    double lengthX = p.x - polygon[i].x;
-                    double lengthY = p.y - polygon[i].y;
-                    lengthX *= scale;
-                    lengthY *= scale;
-                    p.x = (int)(polygon[i].x + lengthX);
-                    p.y = (int)(polygon[i].y + lengthY);
+                    foreach (var key in relationsDict.Keys)
+                    {
+                        if (relationsDict[key].Count == 2 && relationsDict[key][1] == polygon[i])
+                        {
+                            // drawing perpendicular
+                            // TODO: field in MyPoint to polygon?
+                            // JEBIE SIĘ PRZY ŁĄCZENIU OSTATNIEGO Z PIERWSZYM -- DLACZEGO????
+                            MyPoint p1 = relationsDict[key][0];
+                            List<MyPoint> polygonWithP1 = null;
+                            foreach (var p in polygons)
+                            {
+                                if (p.Contains(p1))
+                                {
+                                    polygonWithP1 = p;
+                                    break;
+                                }
+                            }
+                            MyPoint p2 = polygonWithP1[(polygonWithP1.IndexOf(p1) + 1) % polygonWithP1.Count];
+                            MyPoint p3 = relationsDict[key][1];
+                            MyPoint p4 = polygon[(polygon.IndexOf(p3) + 1) % polygon.Count];
+                            if(p1 == p4)
+                            {
+                                MyPoint temp = p3;
+                                p3 = p4;
+                                p4 = temp;
+                            }
+
+                            if (p1.x == p2.x)
+                            {
+                                Debug.WriteLine($"first {rnd.Next()}");
+                                p4.y = p3.y;
+                            }
+                            else
+                            {
+                                double a1 = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
+                                double a2 = -1.0 / a1;
+                                double b = p3.y - a2 * p3.x;
+                                p4.y = (int)(a2 * p4.x + b);
+                                Debug.WriteLine($"key:{key}, a1:{a1}, a2:{a2}, {rnd.Next()}");
+                            }
+                        }
+                    }
+                    if (polygon[i].length != -1.0)
+                    {
+                        MyPoint p = polygon[(i + 1) % polygon.Count];
+                        double dist = getDistance(polygon[i].x, polygon[i].y, p.x, p.y);
+                        double scale = polygon[i].length / dist;
+                        double lengthX = p.x - polygon[i].x;
+                        double lengthY = p.y - polygon[i].y;
+                        lengthX *= scale;
+                        lengthY *= scale;
+                        p.x = (int)(polygon[i].x + lengthX);
+                        p.y = (int)(polygon[i].y + lengthY);
+                    }
                 }
             }
         }
@@ -911,6 +984,38 @@ namespace polygon_editor
             }
             if (counter == polygon.Count - 1) return false;
             return true;
+        }
+
+        bool checkIfCanAddNewRelation(List<MyPoint> polygon)
+        {
+            int counter = 0;
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                foreach (var val in relationsDict.Values)
+                {
+                    if (val.Contains(polygon[i]))
+                    {
+                        counter++;
+                        break;
+                    }
+                }
+            }
+            if (counter == polygon.Count - 1) return false;
+            return true;
+        }
+
+        void sortRelations()
+        {
+            foreach (var key in relationsDict.Keys)
+            {
+                if (relationsDict[key].Count == 2 && relationsDict[key][1].index < relationsDict[key][0].index)
+                {
+                    MyPoint temp = relationsDict[key][0];
+                    relationsDict[key][0] = relationsDict[key][1];
+                    relationsDict[key][1] = temp;
+                    Debug.WriteLine("sorted");
+                }
+            }
         }
 
         public bool isAcyclic(Graph g)
@@ -955,6 +1060,7 @@ namespace polygon_editor
             // TODO: make new List<int> not to be in every constructor
             public int x;
             public int y;
+            public int index = -1;
             public double length = -1.0;
             // public double lengthPrev = -1.0;
 
@@ -981,6 +1087,7 @@ namespace polygon_editor
             public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
         }
 
+        // TODO: new graph when deleting vertex
         void createNewGraph()
         {
             int counter = 0;
@@ -990,11 +1097,14 @@ namespace polygon_editor
             }
             relationsGraph = new Graph(counter);
             allPoints = new List<MyPoint>();
+            counter = 0;
             foreach (var polygon in polygons)
             {
                 foreach (var point in polygon)
                 {
                     allPoints.Add(point);
+                    point.index = counter;
+                    counter++;
                 }
             }
             foreach (var key in relationsDict.Keys)
