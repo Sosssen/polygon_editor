@@ -908,65 +908,92 @@ namespace polygon_editor
         }
 
         // TODO: no arguments there
+        // TODO: start from edge with clear edge
         void correctPointByLength(List<MyPoint> jkasdbf)
         {
+            int max = 0;
+            foreach (var key in relationsDict.Keys)
+            {
+                if (key > max) max = key;
+            }
+            int[] relations = new int[max + 1];
+            for (int i = 0; i < relations.Length; i++)
+            {
+                relations[i] = 0;
+            }
             foreach (var polygon in polygons)
             {
-                for (int i = 0; i < polygon.Count; i++)
+                int idx;
+                for (idx = 0; idx < polygon.Count; idx++)
                 {
-                    foreach (var key in relationsDict.Keys)
+                    if (polygon[idx].length != -1.0) continue;
+                    bool mark = false;
+                    foreach(var key in relationsDict.Keys)
                     {
-                        if (relationsDict[key].Count == 2 && relationsDict[key][1] == polygon[i])
+                        if (relationsDict[key][0] == polygon[idx] || (relationsDict[key].Count == 2 && relationsDict[key][1] == polygon[idx]))
                         {
-                            // drawing perpendicular
-                            // TODO: field in MyPoint to polygon?
-                            // JEBIE SIĘ PRZY ŁĄCZENIU OSTATNIEGO Z PIERWSZYM -- DLACZEGO????
-                            MyPoint p1 = relationsDict[key][0];
-                            List<MyPoint> polygonWithP1 = null;
-                            foreach (var p in polygons)
-                            {
-                                if (p.Contains(p1))
-                                {
-                                    polygonWithP1 = p;
-                                    break;
-                                }
-                            }
-                            MyPoint p2 = polygonWithP1[(polygonWithP1.IndexOf(p1) + 1) % polygonWithP1.Count];
-                            MyPoint p3 = relationsDict[key][1];
-                            MyPoint p4 = polygon[(polygon.IndexOf(p3) + 1) % polygon.Count];
-                            if(p1 == p4)
-                            {
-                                MyPoint temp = p3;
-                                p3 = p4;
-                                p4 = temp;
-                            }
-
-                            if (p1.x == p2.x)
-                            {
-                                Debug.WriteLine($"first {rnd.Next()}");
-                                p4.y = p3.y;
-                            }
-                            else
-                            {
-                                double a1 = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
-                                double a2 = -1.0 / a1;
-                                double b = p3.y - a2 * p3.x;
-                                p4.y = (int)(a2 * p4.x + b);
-                                Debug.WriteLine($"key:{key}, a1:{a1}, a2:{a2}, {rnd.Next()}");
-                            }
+                            mark = true;
+                            break;
                         }
                     }
-                    if (polygon[i].length != -1.0)
+                    if (mark) continue;
+                    break;
+                }
+                Debug.WriteLine($"starting index:{idx}");
+                for (int i = 0; i < polygon.Count; i++)
+                {
+                    int newIdx = (idx + 1 + i) % polygon.Count;
+                    foreach (var relation in polygon[newIdx].relations)
                     {
-                        MyPoint p = polygon[(i + 1) % polygon.Count];
-                        double dist = getDistance(polygon[i].x, polygon[i].y, p.x, p.y);
-                        double scale = polygon[i].length / dist;
-                        double lengthX = p.x - polygon[i].x;
-                        double lengthY = p.y - polygon[i].y;
+                        relations[relation]++;
+                        if (relations[relation] == 1) continue;
+                        Debug.WriteLine("wchodze");
+                        MyPoint p1 = relationsDict[relation][0];
+                        List<MyPoint> polygonWithP1 = null;
+                        foreach (var p in polygons)
+                        {
+                            if (p.Contains(p1))
+                            {
+                                polygonWithP1 = p;
+                                break;
+                            }
+                        }
+                        MyPoint p2 = polygonWithP1[(polygonWithP1.IndexOf(p1) + 1) % polygonWithP1.Count];
+                        MyPoint p3 = relationsDict[relation][1];
+                        MyPoint p4 = polygon[(polygon.IndexOf(p3) + 1) % polygon.Count];
+                        if (p1 == p4 || p4.length != -1.0)
+                        {
+                            MyPoint temp = p3;
+                            p3 = p4;
+                            p4 = temp;
+                        }
+
+                        if (p1.x == p2.x)
+                        {
+                            Debug.WriteLine($"first {rnd.Next()}");
+                            p4.y = p3.y;
+                        }
+                        else
+                        {
+                            double a1 = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
+                            double a2 = -1.0 / a1;
+                            double b = p3.y - a2 * p3.x;
+                            p4.y = (int)(a2 * p4.x + b);
+                            Debug.WriteLine($"key:{relation}, a1:{a1}, a2:{a2}, {rnd.Next()}");
+                        }
+
+                    }
+                    if (polygon[newIdx].length != -1.0)
+                    {
+                        MyPoint p = polygon[(newIdx + 1) % polygon.Count];
+                        double dist = getDistance(polygon[newIdx].x, polygon[newIdx].y, p.x, p.y);
+                        double scale = polygon[newIdx].length / dist;
+                        double lengthX = p.x - polygon[newIdx].x;
+                        double lengthY = p.y - polygon[newIdx].y;
                         lengthX *= scale;
                         lengthY *= scale;
-                        p.x = (int)(polygon[i].x + lengthX);
-                        p.y = (int)(polygon[i].y + lengthY);
+                        p.x = (int)(polygon[newIdx].x + lengthX);
+                        p.y = (int)(polygon[newIdx].y + lengthY);
                     }
                 }
             }
