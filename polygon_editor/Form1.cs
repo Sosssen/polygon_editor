@@ -25,7 +25,6 @@ namespace polygon_editor
         public static int chosenRelation = -1;
         public static Dictionary<int, List<MyPoint>> relationsDict = new Dictionary<int, List<MyPoint>>();
         Graph relationsGraph = null;
-        List<MyPoint> allPoints = null;
 
         private Bitmap drawArea;
         private Pen pen = new Pen(Color.Black, 1);
@@ -184,12 +183,19 @@ namespace polygon_editor
                     {
                         int idx = result.Item2.IndexOf(result.Item3);
                         result.Item2[(idx - 1) % result.Item2.Count].length = -1.0;
+                        result.Item3.removeRelations();
+                        result.Item2[(idx - 1) % result.Item2.Count].removeRelations();
                         result.Item2.Remove(result.Item3);
-
+                        
                         if (result.Item2.Count < 3)
                         {
+                            foreach (var point in result.Item2)
+                            {
+                                point.removeRelations();
+                            }
                             polygons.Remove(result.Item2);
                         }
+                        createNewGraph();
                     }
                     else
                     {
@@ -198,21 +204,34 @@ namespace polygon_editor
                         {
                             int idx = result2.Item2.IndexOf(result2.Item3);
                             result2.Item2[(idx - 1) % result2.Item2.Count].length = -1.0;
+                            result2.Item3.removeRelations();
+                            result2.Item4.removeRelations();
+                            result2.Item2[(idx - 1) % result2.Item2.Count].removeRelations();
                             result2.Item2.Remove(result2.Item3);
                             result2.Item2.Remove(result2.Item4);
 
                             if (result2.Item2.Count < 3)
                             {
+                                foreach (var point in result2.Item2)
+                                {
+                                    point.removeRelations();
+                                }
                                 polygons.Remove(result2.Item2);
                             }
+                            createNewGraph();
                         }
                         else
                         {
                             var result3 = FindPolygon(e.X, e.Y);
                             if(result3.Item1)
                             {
+                                foreach (var point in result3.Item2)
+                                {
+                                    point.removeRelations();
+                                }
                                 polygons.Remove(result3.Item2);
                             }
+                            createNewGraph();
                         }
                     }
                 }
@@ -228,6 +247,7 @@ namespace polygon_editor
                         MyPoint newPoint = new MyPoint((result.Item3.x + result.Item4.x) / 2, (result.Item3.y + result.Item4.y) / 2);
                         int i = result.Item2.IndexOf(result.Item3);
                         result.Item2.Insert(i + 1, newPoint);
+                        createNewGraph();
                     }
                 }
             }
@@ -923,7 +943,6 @@ namespace polygon_editor
         }
 
         // TODO: no arguments there
-        // TODO: start from edge with clear edge
         void correctPointByLength(List<MyPoint> jkasdbf)
         {
             int max = 0;
@@ -1133,6 +1152,19 @@ namespace polygon_editor
                     }
                 }
                 return -1;
+            }
+
+            public void removeRelations()
+            {
+                foreach (var key in relationsDict.Keys)
+                {
+                    relationsDict[key].Remove(this);
+                    if (relationsDict[key].Count == 0)
+                    {
+                        relationsDict.Remove(key);
+                    }
+                }
+                relations = new List<int>();
             }
 
             public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
