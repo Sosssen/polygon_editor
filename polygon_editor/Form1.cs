@@ -93,6 +93,7 @@ namespace polygon_editor
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
+            Debug.WriteLine($"Mouse: {e.X}, {e.Y}");
             // TODO: change this!
             colorPoint = false;
             colorEdge = false;
@@ -251,7 +252,7 @@ namespace polygon_editor
                             if (checkIfCanAddNewLength(result.Item2))
                             {
                                 result.Item3.length = edgeLength;
-                                correctPointByLength(result.Item2);
+                                correctPointByLength(null);
                             }
                             else
                             {
@@ -526,8 +527,8 @@ namespace polygon_editor
                                 text += "len. = ";
                                 text += polygon[i].length.ToString();
                             }
-                            //text += " idx: ";
-                            //text += polygon[i].index.ToString();
+                            text += " idx: ";
+                            text += polygon[i].index.ToString();
                             Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
                             using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
                             {
@@ -696,7 +697,7 @@ namespace polygon_editor
                     MyPoint p = polygons[pointToMove.Item1][pointToMove.Item2];
                     p.x = e.X;
                     p.y = e.Y;
-                    correctPointByLength(polygons[pointToMove.Item1]);
+                    correctPointByLength(null);
                 }
                 else if (moving == 2)
                 {
@@ -961,12 +962,6 @@ namespace polygon_editor
                         MyPoint p2 = polygonWithP1[(polygonWithP1.IndexOf(p1) + 1) % polygonWithP1.Count];
                         MyPoint p3 = relationsDict[relation][1];
                         MyPoint p4 = polygon[(polygon.IndexOf(p3) + 1) % polygon.Count];
-                        if (p1 == p4 || p4.length != -1.0)
-                        {
-                            MyPoint temp = p3;
-                            p3 = p4;
-                            p4 = temp;
-                        }
 
                         if (p1.x == p2.x)
                         {
@@ -979,12 +974,14 @@ namespace polygon_editor
                             double a2 = -1.0 / a1;
                             double b = p3.y - a2 * p3.x;
                             p4.y = (int)(a2 * p4.x + b);
-                            Debug.WriteLine($"key:{relation}, a1:{a1}, a2:{a2}, {rnd.Next()}");
+                            Debug.WriteLine($"p3 rel: {relation}, coord: {p3.x}, {p3.y}");
+                            Debug.WriteLine($"p4 rel: {relation}, coord: {p4.x}, {p4.y}");
                         }
 
                     }
                     if (polygon[newIdx].length != -1.0)
                     {
+                        Debug.WriteLine($"poprawiam długość dla {newIdx}, {newIdx + 1} na wartość {polygon[newIdx].length}");
                         MyPoint p = polygon[(newIdx + 1) % polygon.Count];
                         double dist = getDistance(polygon[newIdx].x, polygon[newIdx].y, p.x, p.y);
                         double scale = polygon[newIdx].length / dist;
