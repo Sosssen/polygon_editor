@@ -253,6 +253,7 @@ namespace polygon_editor
             this.CLEAR.TabIndex = 0;
             this.CLEAR.Text = "wyczyść canve";
             this.CLEAR.UseVisualStyleBackColor = true;
+            this.CLEAR.Click += new System.EventHandler(this.CLEAR_Click);
             // 
             // SCENE
             // 
@@ -263,6 +264,7 @@ namespace polygon_editor
             this.SCENE.TabIndex = 1;
             this.SCENE.Text = "predefiniowana scena";
             this.SCENE.UseVisualStyleBackColor = true;
+            this.SCENE.Click += new System.EventHandler(this.SCENE_Click);
             // 
             // radioButton1
             // 

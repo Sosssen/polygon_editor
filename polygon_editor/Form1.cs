@@ -1192,5 +1192,81 @@ namespace polygon_editor
                 }
             }
         }
+
+        private void CLEAR_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
+            CLEAR.BackColor = SystemColors.Control;
+            SCENE.BackColor = SystemColors.Control;
+            chosenButton = 0;
+
+            points = new List<MyPoint>();
+            polygons = new List<List<MyPoint>>();
+            relationsDict = new Dictionary<int, List<MyPoint>>();
+
+            DrawCanvas();
+        }
+
+        private void SCENE_Click(object sender, EventArgs e)
+        {
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
+            CLEAR.BackColor = SystemColors.Control;
+            SCENE.BackColor = SystemColors.Control;
+            chosenButton = 0;
+
+            points = new List<MyPoint>();
+            polygons = new List<List<MyPoint>>();
+            relationsDict = new Dictionary<int, List<MyPoint>>();
+
+            List<MyPoint> list1 = new List<MyPoint>();
+            List<MyPoint> list2 = new List<MyPoint>();
+
+            list1.Add(new MyPoint(300, 100));
+            list1.Add(new MyPoint(100, 400));
+            list1.Add(new MyPoint(400, 200));
+            list1[0].length = 300.0;
+
+            polygons.Add(list1);
+
+            list2.Add(new MyPoint(250, 500));
+            list2.Add(new MyPoint(200, 600));
+            list2.Add(new MyPoint(500, 650));
+            list2.Add(new MyPoint(550, 550));
+            list2.Add(new MyPoint(400, 450));
+            list2[3].length = 200.0;
+
+            polygons.Add(list2);
+
+            List<MyPoint> rel1 = new List<MyPoint>();
+            rel1.Add(list1[2]);
+            list1[2].relations.Add(0);
+            rel1.Add(list2[0]);
+            list2[0].relations.Add(0);
+
+            relationsDict.Add(0, rel1);
+
+            List<MyPoint> rel2 = new List<MyPoint>();
+            rel2.Add(list2[2]);
+            list2[2].relations.Add(1);
+            rel2.Add(list2[4]);
+            list2[4].relations.Add(1);
+
+            relationsDict.Add(1, rel2);
+
+            createNewGraph();
+            correctPointByLength(null);
+
+            DrawCanvas();
+        }
     }
 }
