@@ -12,6 +12,7 @@ using ASD.Graphs;
 
 // TODO: predefined canva with 2 polygons
 // TODO: maybe button to create new, plain canva?
+// TODO: check if there are no more than n - 1 limits
 
 namespace polygon_editor
 {
@@ -79,6 +80,8 @@ namespace polygon_editor
             SET_LENGTH.BackColor = SystemColors.Control;
             ADD_REL.BackColor = SystemColors.Control;
             REMOVE_REL.BackColor = SystemColors.Control;
+            CLEAR.BackColor = SystemColors.Control;
+            SCENE.BackColor = SystemColors.Control;
             chosenButton = 1;
 
             drawArea = new Bitmap(Canvas.Width, Canvas.Height);
@@ -547,8 +550,8 @@ namespace polygon_editor
                                 text += "len. = ";
                                 text += polygon[i].length.ToString();
                             }
-                            text += " idx: ";
-                            text += polygon[i].countIndex().ToString();
+                            //text += " idx: ";
+                            //text += polygon[i].countIndex().ToString();
                             Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
                             using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
                             {
