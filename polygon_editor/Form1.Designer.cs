@@ -275,7 +275,7 @@ namespace polygon_editor
             this.BRESENHAM.Size = new System.Drawing.Size(370, 68);
             this.BRESENHAM.TabIndex = 2;
             this.BRESENHAM.TabStop = true;
-            this.BRESENHAM.Text = "radioButton1";
+            this.BRESENHAM.Text = "renderuj Bresenhamem";
             this.BRESENHAM.UseVisualStyleBackColor = true;
             this.BRESENHAM.CheckedChanged += new System.EventHandler(this.BRESENHAM_CheckedChanged);
             this.BRESENHAM.Click += new System.EventHandler(this.BRESENHAM_Click);

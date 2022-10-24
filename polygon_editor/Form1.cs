@@ -64,6 +64,9 @@ namespace polygon_editor
         public polygon_editor()
         {
             InitializeComponent();
+            this.Text = "Polygon Editor";
+            this.Icon = Properties.Resources.pe_icon;
+            this.ShowIcon = false;
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
