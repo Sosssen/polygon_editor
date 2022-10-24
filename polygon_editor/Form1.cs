@@ -59,6 +59,8 @@ namespace polygon_editor
         private MyPoint startingPointB = new MyPoint();
         private List<MyPoint> polygonToMove = null;
         private List<MyPoint> polygonToMoveCopy = null;
+
+        private bool bresenham = false;
         public polygon_editor()
         {
             InitializeComponent();
@@ -95,6 +97,11 @@ namespace polygon_editor
 
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
+            if (bresenham)
+            {
+                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             Debug.WriteLine($"Mouse: {e.X}, {e.Y}");
             // TODO: change this!
             colorPoint = false;
@@ -441,124 +448,140 @@ namespace polygon_editor
                     g.Clear(Color.White);
                 }
 
-                using (Graphics g = Graphics.FromImage(drawArea))
-                {
-                    // draw all poygons
-                    foreach (var polygon in polygons)
-                    {
-                        MyPoint[] arr = polygon.ToArray();
-                        Point[] newArr = new Point[arr.Length];
-                        for (int i = 0; i < arr.Length; i++)
-                        {
-                            newArr[i] = arr[i];
-                        }
-
-                        if (colorEdge)
-                        {
-                            for (int i = 0; i < polygon.Count; i++)
-                            {
-                                if (polygon[i] == edgeToColor)
-                                {
-                                    g.DrawLine(redPen, polygon[i], polygon[(i + 1) % polygon.Count]);
-                                }
-                                else
-                                {
-                                    g.DrawLine(pen, polygon[i], polygon[(i + 1) % polygon.Count]);
-                                }
-                            }
-                        }
-                        else if (colorPolygon)
-                        {
-                            if (polygon == polygonToColor)
-                            {
-                                g.DrawPolygon(redPen, newArr);
-                            }
-                            else
-                            {
-                                g.DrawPolygon(pen, newArr);
-                            }
-                        }
-                        else
-                        {
-
-                            g.DrawPolygon(pen, newArr);
-
-                        }
-
-                        foreach (var point in polygon)
-                        {
-                            if (chosenButton == 2 && colorPoint && point == pointToColor)
-                            {
-                                g.DrawEllipse(pen, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
-                                g.FillEllipse(sbRed, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
-
-                            }
-                            else
-                            {
-                                g.DrawEllipse(pen, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
-                                g.FillEllipse(sbBlack, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
-                            }
-                        }
-
-
-                    }
-                }
-                using (Graphics g = Graphics.FromImage(drawArea))
-                {
-                    // connect all points that are not yet in any polygon
-                    for (int i = 0; i < points.Count - 1; i++)
-                    {
-                        g.DrawLine(pen, points[i], points[i + 1]);
-                    }
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
-                        {
-                            g.DrawEllipse(pen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
-                            g.FillEllipse(sbGreen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
-                        }
-                        else
-                        {
-                            g.DrawEllipse(pen, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
-                            g.FillEllipse(sbBlack, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
-                        }
-
-                    }
-                    // draw line to mouse while creating new polygon
-                    if (chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
-                }
-                using (Graphics g = Graphics.FromImage(drawArea))
+                if (bresenham)
                 {
                     foreach (var polygon in polygons)
                     {
                         for (int i = 0; i < polygon.Count; i++)
                         {
-                            string text = "";
-                            if (polygon[i].relations.Count > 0)
-                            {
+                            var p1 = polygon[i];
+                            var p2 = polygon[(i + 1) % polygon.Count];
+                            drawLine(p1.x, p1.y, p2.x, p2.y);
+                        }
+                    }
+                }
+                else
+                {
 
-                                foreach (var number in polygon[i].relations)
+                    using (Graphics g = Graphics.FromImage(drawArea))
+                    {
+                        // draw all poygons
+                        foreach (var polygon in polygons)
+                        {
+                            MyPoint[] arr = polygon.ToArray();
+                            Point[] newArr = new Point[arr.Length];
+                            for (int i = 0; i < arr.Length; i++)
+                            {
+                                newArr[i] = arr[i];
+                            }
+
+                            if (colorEdge)
+                            {
+                                for (int i = 0; i < polygon.Count; i++)
                                 {
-                                    text += number.ToString();
-                                    text += " ";
+                                    if (polygon[i] == edgeToColor)
+                                    {
+                                        g.DrawLine(redPen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                    }
+                                    else
+                                    {
+                                        g.DrawLine(pen, polygon[i], polygon[(i + 1) % polygon.Count]);
+                                    }
                                 }
-                                // text = text.Substring(0, text.Length - 1);
+                            }
+                            else if (colorPolygon)
+                            {
+                                if (polygon == polygonToColor)
+                                {
+                                    g.DrawPolygon(redPen, newArr);
+                                }
+                                else
+                                {
+                                    g.DrawPolygon(pen, newArr);
+                                }
+                            }
+                            else
+                            {
+
+                                g.DrawPolygon(pen, newArr);
 
                             }
-                            if (polygon[i].length != -1.0)
+
+                            foreach (var point in polygon)
                             {
-                                text += "len. = ";
-                                text += polygon[i].length.ToString();
+                                if (chosenButton == 2 && colorPoint && point == pointToColor)
+                                {
+                                    g.DrawEllipse(pen, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
+                                    g.FillEllipse(sbRed, point.x - 2 * radius, point.y - 2 * radius, 4 * radius, 4 * radius);
+
+                                }
+                                else
+                                {
+                                    g.DrawEllipse(pen, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                                    g.FillEllipse(sbBlack, point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+                                }
                             }
-                            //text += " idx: ";
-                            //text += polygon[i].countIndex().ToString();
-                            Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
-                            using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
+
+
+                        }
+                    }
+                    using (Graphics g = Graphics.FromImage(drawArea))
+                    {
+                        // connect all points that are not yet in any polygon
+                        for (int i = 0; i < points.Count - 1; i++)
+                        {
+                            g.DrawLine(pen, points[i], points[i + 1]);
+                        }
+                        for (int i = 0; i < points.Count; i++)
+                        {
+                            if (chosenButton == 1 && colorPoint && pointToColor == points[i] && i == 0 && points.Count > 2)
                             {
-                                StringFormat sf = new StringFormat();
-                                sf.LineAlignment = StringAlignment.Center;
-                                sf.Alignment = StringAlignment.Center;
-                                g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
+                                g.DrawEllipse(pen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
+                                g.FillEllipse(sbGreen, points[i].x - 2 * radius, points[i].y - 2 * radius, 4 * radius, 4 * radius);
+                            }
+                            else
+                            {
+                                g.DrawEllipse(pen, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
+                                g.FillEllipse(sbBlack, points[i].x - radius, points[i].y - radius, 2 * radius, 2 * radius);
+                            }
+
+                        }
+                        // draw line to mouse while creating new polygon
+                        if (chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
+                    }
+                    using (Graphics g = Graphics.FromImage(drawArea))
+                    {
+                        foreach (var polygon in polygons)
+                        {
+                            for (int i = 0; i < polygon.Count; i++)
+                            {
+                                string text = "";
+                                if (polygon[i].relations.Count > 0)
+                                {
+
+                                    foreach (var number in polygon[i].relations)
+                                    {
+                                        text += number.ToString();
+                                        text += " ";
+                                    }
+                                    // text = text.Substring(0, text.Length - 1);
+
+                                }
+                                if (polygon[i].length != -1.0)
+                                {
+                                    text += "len. = ";
+                                    text += polygon[i].length.ToString();
+                                }
+                                //text += " idx: ";
+                                //text += polygon[i].countIndex().ToString();
+                                Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
+                                using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
+                                {
+                                    StringFormat sf = new StringFormat();
+                                    sf.LineAlignment = StringAlignment.Center;
+                                    sf.Alignment = StringAlignment.Center;
+                                    g.DrawString(text, font1, sbBlack, middle.X, middle.Y, sf);
+                                }
                             }
                         }
                     }
@@ -1205,6 +1228,12 @@ namespace polygon_editor
             SCENE.BackColor = SystemColors.Control;
             chosenButton = 0;
 
+            if (bresenham)
+            {
+                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             points = new List<MyPoint>();
             polygons = new List<List<MyPoint>>();
             relationsDict = new Dictionary<int, List<MyPoint>>();
@@ -1223,6 +1252,12 @@ namespace polygon_editor
             CLEAR.BackColor = SystemColors.Control;
             SCENE.BackColor = SystemColors.Control;
             chosenButton = 0;
+
+            if (bresenham)
+            {
+                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             points = new List<MyPoint>();
             polygons = new List<List<MyPoint>>();
@@ -1267,6 +1302,117 @@ namespace polygon_editor
             correctPointByLength(null);
 
             DrawCanvas();
+        }
+
+        bool isChecked = false;
+        private void BRESENHAM_CheckedChanged(object sender, EventArgs e)
+        {
+            isChecked = BRESENHAM.Checked;
+        }
+
+        private void BRESENHAM_Click(object sender, EventArgs e)
+        {
+            if (BRESENHAM.Checked && !isChecked)
+                BRESENHAM.Checked = false;
+            else
+            {
+                BRESENHAM.Checked = true;
+                isChecked = false;
+            }
+            // Debug.WriteLine($"{isChecked}");
+            CREATE.BackColor = SystemColors.Control;
+            MODIFY.BackColor = SystemColors.Control;
+            MIDDLE_INSERT.BackColor = SystemColors.Control;
+            SET_LENGTH.BackColor = SystemColors.Control;
+            ADD_REL.BackColor = SystemColors.Control;
+            REMOVE_REL.BackColor = SystemColors.Control;
+            CLEAR.BackColor = SystemColors.Control;
+            SCENE.BackColor = SystemColors.Control;
+            chosenButton = 0;
+            bresenham = BRESENHAM.Checked;
+            DrawCanvas();
+        }
+
+        private void drawLine(int x0, int y0, int x1, int y1)
+        {
+            if (Math.Abs(y1 - y0) < Math.Abs(x1 - x0))
+            {
+                if (x0 > x1)
+                {
+                    drawLineLow(x1, y1, x0, y0);
+                }
+                else
+                {
+                    drawLineLow(x0, y0, x1, y1);
+                }
+            }
+            else
+            {
+                if (y0 > y1)
+                {
+                    drawLineHigh(x1, y1, x0, y0);
+                }
+                else
+                {
+                    drawLineHigh(x0, y0, x1, y1);
+                }
+            }
+        }
+
+        private void drawLineLow(int x0, int y0, int x1, int y1)
+        {
+            int dx = x1 - x0;
+            int dy = y1 - y0;
+            int sy = 1;
+            if (dy < 0)
+            {
+                sy = -1;
+                dy = -dy;
+            }
+            int D = 2 * dy - dx;
+            int y = y0;
+
+            for (int x = x0; x <= x1; x++)
+            {
+                drawArea.SetPixel(x, y, Color.Black);
+                if (D > 0)
+                {
+                    y += sy;
+                    D += 2 * (dy - dx);
+                }
+                else
+                {
+                    D += 2 * dy;
+                }
+            }
+        }
+
+        private void drawLineHigh(int x0, int y0, int x1, int y1)
+        {
+            int dx = x1 - x0;
+            int dy = y1 - y0;
+            int sx = 1;
+            if (dx < 0)
+            {
+                sx = -1;
+                dx = -dx;
+            }
+            int D = 2 * dx - dy;
+            int x = x0;
+
+            for (int y = y0; y <= y1; y++)
+            {
+                drawArea.SetPixel(x, y, Color.Black);
+                if (D > 0)
+                {
+                    x += sx;
+                    D += 2 * (dx - dy);
+                }
+                else
+                {
+                    D += 2 * dx;
+                }
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ namespace polygon_editor
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.CLEAR = new System.Windows.Forms.Button();
             this.SCENE = new System.Windows.Forms.Button();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.BRESENHAM = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -233,7 +233,7 @@ namespace polygon_editor
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel6.Controls.Add(this.CLEAR, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.SCENE, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.radioButton1, 0, 2);
+            this.tableLayoutPanel6.Controls.Add(this.BRESENHAM, 0, 2);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 666);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -266,17 +266,19 @@ namespace polygon_editor
             this.SCENE.UseVisualStyleBackColor = true;
             this.SCENE.Click += new System.EventHandler(this.SCENE_Click);
             // 
-            // radioButton1
+            // BRESENHAM
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.radioButton1.Location = new System.Drawing.Point(3, 147);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(370, 68);
-            this.radioButton1.TabIndex = 2;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "radioButton1";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.BRESENHAM.AutoSize = true;
+            this.BRESENHAM.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BRESENHAM.Location = new System.Drawing.Point(3, 147);
+            this.BRESENHAM.Name = "BRESENHAM";
+            this.BRESENHAM.Size = new System.Drawing.Size(370, 68);
+            this.BRESENHAM.TabIndex = 2;
+            this.BRESENHAM.TabStop = true;
+            this.BRESENHAM.Text = "radioButton1";
+            this.BRESENHAM.UseVisualStyleBackColor = true;
+            this.BRESENHAM.CheckedChanged += new System.EventHandler(this.BRESENHAM_CheckedChanged);
+            this.BRESENHAM.Click += new System.EventHandler(this.BRESENHAM_Click);
             // 
             // polygon_editor
             // 
@@ -318,7 +320,7 @@ namespace polygon_editor
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Button CLEAR;
         private System.Windows.Forms.Button SCENE;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton BRESENHAM;
     }
 }
 
