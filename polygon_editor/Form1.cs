@@ -296,6 +296,14 @@ namespace polygon_editor
 
                     }
                 }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    var result = FindEdgeInPolygons(e.X, e.Y);
+                    if (result.Item1)
+                    {
+                        result.Item3.length = -1.0;
+                    }
+                }
             }
             else if (chosenButton == 5)
             {
@@ -1453,7 +1461,7 @@ namespace polygon_editor
 
             for (int x = x0; x <= x1; x++)
             {
-                drawArea.SetPixel(x, y, Color.Black);
+                if (x >= 0 && y >= 0 && x < drawArea.Width && y < drawArea.Height) drawArea.SetPixel(x, y, Color.Black);
                 if (D > 0)
                 {
                     y += sy;
@@ -1481,7 +1489,7 @@ namespace polygon_editor
 
             for (int y = y0; y <= y1; y++)
             {
-                drawArea.SetPixel(x, y, Color.Black);
+                if (x >= 0 && y >= 0 && x < drawArea.Width && y < drawArea.Height) drawArea.SetPixel(x, y, Color.Black);
                 if (D > 0)
                 {
                     x += sx;
