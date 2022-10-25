@@ -271,7 +271,7 @@ namespace polygon_editor
 
                         if (edgeLengthChanged)
                         {
-                            if (checkIfCanAddNewLimit(result.Item2))
+                            if (checkIfCanAddNewLimit(result.Item2) || result.Item3.relations.Count > 0)
                             {
                                 result.Item3.length = edgeLength;
                                 correctPointByLength();
