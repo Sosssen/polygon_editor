@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Jakub Sosnowski https://github.com/Sosssen
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -274,7 +276,7 @@ namespace polygon_editor
                             if (checkIfCanAddNewLimit(result.Item2) || result.Item3.relations.Count > 0)
                             {
                                 result.Item3.length = edgeLength;
-                                correctPointByLength();
+                                correctPoints();
                             }
                             else
                             {
@@ -364,7 +366,7 @@ namespace polygon_editor
                                 MessageBox.Show("Too many limits", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
-                        correctPointByLength();
+                        correctPoints();
                     }
                     
                 }
@@ -393,7 +395,7 @@ namespace polygon_editor
                         }
                     }
                 }
-                correctPointByLength();
+                correctPoints();
             }
 
 
@@ -578,7 +580,7 @@ namespace polygon_editor
                 }
                 polygons[pointToMove.Item1][pointToMove.Item2].x = mouseX;
                 polygons[pointToMove.Item1][pointToMove.Item2].y = mouseY;
-                correctPointByLength();
+                correctPoints();
                 moving = 0;
             }
         }
@@ -725,7 +727,7 @@ namespace polygon_editor
                     MyPoint p = polygons[pointToMove.Item1][pointToMove.Item2];
                     p.x = e.X;
                     p.y = e.Y;
-                    correctPointByLength();
+                    correctPoints();
                 }
                 else if (moving == 2)
                 {
@@ -741,7 +743,7 @@ namespace polygon_editor
                     polygons[edgeToMove.Item1][edgeToMove.Item2].y = a.y;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].x = b.x;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].y = b.y;
-                    correctPointByLength();
+                    correctPoints();
                 }
                 else if (moving == 3)
                 {
@@ -755,7 +757,7 @@ namespace polygon_editor
                         polygonToMove[i].x = temp.x;
                         polygonToMove[i].y = temp.y;
                     }
-                    correctPointByLength();
+                    correctPoints();
                 }
             }
             else if (chosenButton == 3)
@@ -919,7 +921,7 @@ namespace polygon_editor
             }
         }
 
-        void correctPointByLength()
+        void correctPoints()
         {
             int max = 0;
             foreach (var key in relationsDict.Keys)
@@ -1278,7 +1280,7 @@ namespace polygon_editor
 
             sortRelations();
             createNewGraph();
-            correctPointByLength();
+            correctPoints();
 
             DrawCanvas();
         }
