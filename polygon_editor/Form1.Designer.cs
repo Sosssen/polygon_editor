@@ -67,18 +67,20 @@ namespace polygon_editor
             this.tableLayoutPanel1.Controls.Add(this.Canvas, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.groupBox1, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1573, 931);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1578, 946);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // Canvas
             // 
             this.Canvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Canvas.Location = new System.Drawing.Point(3, 3);
+            this.Canvas.Location = new System.Drawing.Point(2, 2);
+            this.Canvas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(1173, 925);
+            this.Canvas.Size = new System.Drawing.Size(1179, 942);
             this.Canvas.TabIndex = 0;
             this.Canvas.TabStop = false;
             this.Canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
@@ -89,31 +91,34 @@ namespace polygon_editor
             // 
             this.groupBox1.Controls.Add(this.tableLayoutPanel2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(1182, 3);
+            this.groupBox1.Location = new System.Drawing.Point(1185, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(388, 925);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(391, 942);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Choose tool";
+            this.groupBox1.Text = "Choose one:";
             // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel5, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel6, 0, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 35);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 26);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(382, 887);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(387, 914);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // tableLayoutPanel3
@@ -124,32 +129,35 @@ namespace polygon_editor
             this.tableLayoutPanel3.Controls.Add(this.MODIFY, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.CREATE, 0, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(2, 2);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(376, 215);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(383, 224);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
             // MODIFY
             // 
             this.MODIFY.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MODIFY.Location = new System.Drawing.Point(191, 3);
+            this.MODIFY.Location = new System.Drawing.Point(193, 2);
+            this.MODIFY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MODIFY.Name = "MODIFY";
-            this.MODIFY.Size = new System.Drawing.Size(182, 209);
+            this.MODIFY.Size = new System.Drawing.Size(188, 220);
             this.MODIFY.TabIndex = 1;
-            this.MODIFY.Text = "modyfikuj wielokąt";
+            this.MODIFY.Text = "Modify existing polygon";
             this.MODIFY.UseVisualStyleBackColor = true;
             this.MODIFY.Click += new System.EventHandler(this.MODIFY_Click);
             // 
             // CREATE
             // 
             this.CREATE.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CREATE.Location = new System.Drawing.Point(3, 3);
+            this.CREATE.Location = new System.Drawing.Point(2, 2);
+            this.CREATE.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.CREATE.Name = "CREATE";
-            this.CREATE.Size = new System.Drawing.Size(182, 209);
+            this.CREATE.Size = new System.Drawing.Size(187, 220);
             this.CREATE.TabIndex = 0;
-            this.CREATE.Text = "stwórz wielokąt";
+            this.CREATE.Text = "Create new polygon";
             this.CREATE.UseVisualStyleBackColor = true;
             this.CREATE.Click += new System.EventHandler(this.CREATE_Click);
             // 
@@ -161,32 +169,35 @@ namespace polygon_editor
             this.tableLayoutPanel4.Controls.Add(this.MIDDLE_INSERT, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.SET_LENGTH, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 224);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(2, 230);
+            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(376, 215);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(383, 224);
             this.tableLayoutPanel4.TabIndex = 3;
             // 
             // MIDDLE_INSERT
             // 
             this.MIDDLE_INSERT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MIDDLE_INSERT.Location = new System.Drawing.Point(3, 3);
+            this.MIDDLE_INSERT.Location = new System.Drawing.Point(2, 2);
+            this.MIDDLE_INSERT.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MIDDLE_INSERT.Name = "MIDDLE_INSERT";
-            this.MIDDLE_INSERT.Size = new System.Drawing.Size(182, 209);
+            this.MIDDLE_INSERT.Size = new System.Drawing.Size(187, 220);
             this.MIDDLE_INSERT.TabIndex = 0;
-            this.MIDDLE_INSERT.Text = "dodaj wierzchołek w środku";
+            this.MIDDLE_INSERT.Text = "Insert node in the middle of the edge";
             this.MIDDLE_INSERT.UseVisualStyleBackColor = true;
             this.MIDDLE_INSERT.Click += new System.EventHandler(this.MIDDLE_INSERT_Click);
             // 
             // SET_LENGTH
             // 
             this.SET_LENGTH.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SET_LENGTH.Location = new System.Drawing.Point(191, 3);
+            this.SET_LENGTH.Location = new System.Drawing.Point(193, 2);
+            this.SET_LENGTH.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.SET_LENGTH.Name = "SET_LENGTH";
-            this.SET_LENGTH.Size = new System.Drawing.Size(182, 209);
+            this.SET_LENGTH.Size = new System.Drawing.Size(188, 220);
             this.SET_LENGTH.TabIndex = 1;
-            this.SET_LENGTH.Text = "zmień rozmiar krawędzi";
+            this.SET_LENGTH.Text = "Set length of an edge";
             this.SET_LENGTH.UseVisualStyleBackColor = true;
             this.SET_LENGTH.Click += new System.EventHandler(this.SET_LENGTH_Click);
             // 
@@ -198,32 +209,35 @@ namespace polygon_editor
             this.tableLayoutPanel5.Controls.Add(this.ADD_REL, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.REMOVE_REL, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 445);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(2, 458);
+            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(376, 215);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(383, 224);
             this.tableLayoutPanel5.TabIndex = 4;
             // 
             // ADD_REL
             // 
             this.ADD_REL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ADD_REL.Location = new System.Drawing.Point(3, 3);
+            this.ADD_REL.Location = new System.Drawing.Point(2, 2);
+            this.ADD_REL.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ADD_REL.Name = "ADD_REL";
-            this.ADD_REL.Size = new System.Drawing.Size(182, 209);
+            this.ADD_REL.Size = new System.Drawing.Size(187, 220);
             this.ADD_REL.TabIndex = 0;
-            this.ADD_REL.Text = "dodaj relacje";
+            this.ADD_REL.Text = "Add new perpendicular relation";
             this.ADD_REL.UseVisualStyleBackColor = true;
             this.ADD_REL.Click += new System.EventHandler(this.ADD_REL_Click);
             // 
             // REMOVE_REL
             // 
             this.REMOVE_REL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.REMOVE_REL.Location = new System.Drawing.Point(191, 3);
+            this.REMOVE_REL.Location = new System.Drawing.Point(193, 2);
+            this.REMOVE_REL.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.REMOVE_REL.Name = "REMOVE_REL";
-            this.REMOVE_REL.Size = new System.Drawing.Size(182, 209);
+            this.REMOVE_REL.Size = new System.Drawing.Size(188, 220);
             this.REMOVE_REL.TabIndex = 1;
-            this.REMOVE_REL.Text = "usuń relacje";
+            this.REMOVE_REL.Text = "Remove perpendicular relation";
             this.REMOVE_REL.UseVisualStyleBackColor = true;
             this.REMOVE_REL.Click += new System.EventHandler(this.REMOVE_REL_Click);
             // 
@@ -235,34 +249,37 @@ namespace polygon_editor
             this.tableLayoutPanel6.Controls.Add(this.SCENE, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.BRESENHAM, 0, 2);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 666);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(2, 686);
+            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 3;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(376, 218);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(383, 226);
             this.tableLayoutPanel6.TabIndex = 5;
             // 
             // CLEAR
             // 
             this.CLEAR.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CLEAR.Location = new System.Drawing.Point(3, 3);
+            this.CLEAR.Location = new System.Drawing.Point(2, 2);
+            this.CLEAR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.CLEAR.Name = "CLEAR";
-            this.CLEAR.Size = new System.Drawing.Size(370, 66);
+            this.CLEAR.Size = new System.Drawing.Size(379, 71);
             this.CLEAR.TabIndex = 0;
-            this.CLEAR.Text = "wyczyść canve";
+            this.CLEAR.Text = "Clear canva";
             this.CLEAR.UseVisualStyleBackColor = true;
             this.CLEAR.Click += new System.EventHandler(this.CLEAR_Click);
             // 
             // SCENE
             // 
             this.SCENE.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SCENE.Location = new System.Drawing.Point(3, 75);
+            this.SCENE.Location = new System.Drawing.Point(2, 77);
+            this.SCENE.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.SCENE.Name = "SCENE";
-            this.SCENE.Size = new System.Drawing.Size(370, 66);
+            this.SCENE.Size = new System.Drawing.Size(379, 71);
             this.SCENE.TabIndex = 1;
-            this.SCENE.Text = "predefiniowana scena";
+            this.SCENE.Text = "Show predefined scene";
             this.SCENE.UseVisualStyleBackColor = true;
             this.SCENE.Click += new System.EventHandler(this.SCENE_Click);
             // 
@@ -270,22 +287,24 @@ namespace polygon_editor
             // 
             this.BRESENHAM.AutoSize = true;
             this.BRESENHAM.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BRESENHAM.Location = new System.Drawing.Point(3, 147);
+            this.BRESENHAM.Location = new System.Drawing.Point(2, 152);
+            this.BRESENHAM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.BRESENHAM.Name = "BRESENHAM";
-            this.BRESENHAM.Size = new System.Drawing.Size(370, 68);
+            this.BRESENHAM.Size = new System.Drawing.Size(379, 72);
             this.BRESENHAM.TabIndex = 2;
             this.BRESENHAM.TabStop = true;
-            this.BRESENHAM.Text = "renderuj Bresenhamem";
+            this.BRESENHAM.Text = "Bresenham\'s algorithm";
             this.BRESENHAM.UseVisualStyleBackColor = true;
             this.BRESENHAM.CheckedChanged += new System.EventHandler(this.BRESENHAM_CheckedChanged);
             this.BRESENHAM.Click += new System.EventHandler(this.BRESENHAM_Click);
             // 
             // polygon_editor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1574, 929);
+            this.ClientSize = new System.Drawing.Size(1578, 944);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "polygon_editor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";

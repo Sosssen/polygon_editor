@@ -63,10 +63,10 @@ namespace polygon_editor
         private bool bresenham = false;
         public polygon_editor()
         {
+
             InitializeComponent();
             this.Text = "Polygon Editor";
             this.Icon = Properties.Resources.pe_icon;
-            this.ShowIcon = false;
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MinimizeBox = false;
@@ -102,7 +102,7 @@ namespace polygon_editor
         {
             if (bresenham)
             {
-                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Turn off rendering with Bresenham's algorithm", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             Debug.WriteLine($"Mouse: {e.X}, {e.Y}");
@@ -121,7 +121,7 @@ namespace polygon_editor
                         {
                             if (points.Count <= 2)
                             {
-                                MessageBox.Show("co najmniej 3 wierzcholki", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Polygon need at least 3 nodes", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             else
                             {
@@ -132,7 +132,7 @@ namespace polygon_editor
                         }
                         else
                         {
-                            MessageBox.Show("możesz łączyć tylko z pierwszym", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("You can connect only with first node", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
@@ -289,7 +289,7 @@ namespace polygon_editor
                             }
                             else
                             {
-                                MessageBox.Show("za dużo ograniczonych krawędzi", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Too many limits", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                         // TODO: maybe better precision?
@@ -335,19 +335,19 @@ namespace polygon_editor
                                 {
                                     if (relationsDict[chosenRelation].Contains(result.Item3))
                                     {
-                                        MessageBox.Show("taka relacja już istnieje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBox.Show("This relation already exists on this edge", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                     else
                                     {
                                         if (relationsDict[chosenRelation].Count == 2)
                                         {
-                                            MessageBox.Show("już są 2 relacje", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            MessageBox.Show("There are 2 edges in this relation already", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         }
                                         else
                                         {
                                             if (!checkIfCanAddRelation(chosenRelation, result.Item3))
                                             {
-                                                MessageBox.Show("już jest jako druga", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                MessageBox.Show("You can't add this relation to this edge", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
                                             else
                                             {
@@ -357,7 +357,7 @@ namespace polygon_editor
                                                 relationsGraph.AddEdge(idx1, idx2);
                                                 if (!isAcyclic(relationsGraph))
                                                 {
-                                                    MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                    MessageBox.Show("There is cycle", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                                     relationsGraph.RemoveEdge(idx1, idx2);
                                                 }
                                                 else
@@ -374,7 +374,7 @@ namespace polygon_editor
                             }
                             else
                             {
-                                MessageBox.Show("za dużo relacji", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Too many limits", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             // relationsDict[chosenRelation].Add(result.Item3);
                         }
@@ -607,7 +607,7 @@ namespace polygon_editor
             }
             catch(OverflowException e)
             {
-                MessageBox.Show("wierzchołek znalazł się zbyt daleko miejsca do rysowania", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Node is too far from canva", e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 polygons[pointToMove.Item1][pointToMove.Item2].x = mouseX;
                 polygons[pointToMove.Item1][pointToMove.Item2].y = mouseY;
                 correctPointByLength(polygons[pointToMove.Item1]);
@@ -1316,7 +1316,7 @@ namespace polygon_editor
 
             if (bresenham)
             {
-                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Turn off rendering with Bresenham's algorithm", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -1341,7 +1341,7 @@ namespace polygon_editor
 
             if (bresenham)
             {
-                MessageBox.Show("wyłącz rendering", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Turn off rendering with Bresenham's algorithm", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
