@@ -282,7 +282,7 @@ namespace polygon_editor
 
                         if (edgeLengthChanged)
                         {
-                            if (checkIfCanAddNewLength(result.Item2))
+                            if (checkIfCanAddNewLimit(result.Item2))
                             {
                                 result.Item3.length = edgeLength;
                                 correctPointByLength(null);
@@ -313,7 +313,7 @@ namespace polygon_editor
                         // TODO: can't add more than 2 edges to 1 relation
                         if (chosenRelation != -1)
                         {
-                            if (checkIfCanAddNewRelation(result.Item2) || result.Item3.relations.Count > 0)
+                            if (checkIfCanAddNewLimit(result.Item2) || result.Item3.relations.Count > 0)
                             {
 
 
@@ -337,21 +337,28 @@ namespace polygon_editor
                                         }
                                         else
                                         {
-                                            createNewGraph();
-                                            int idx1 = relationsDict[chosenRelation][0].countIndex();
-                                            int idx2 = result.Item3.countIndex();
-                                            relationsGraph.AddEdge(idx1, idx2);
-                                            if (!isAcyclic(relationsGraph))
+                                            if (!checkIfCanAddRelation(chosenRelation, result.Item3))
                                             {
-                                                MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                                relationsGraph.RemoveEdge(idx1, idx2);
+                                                MessageBox.Show("już jest jako druga", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
                                             else
                                             {
-                                                relationsDict[chosenRelation].Add(result.Item3);
-                                                sortRelations();
-                                                result.Item3.relations.Add(chosenRelation);
-                                                result.Item3.relations.Sort();
+                                                createNewGraph();
+                                                int idx1 = relationsDict[chosenRelation][0].countIndex();
+                                                int idx2 = result.Item3.countIndex();
+                                                relationsGraph.AddEdge(idx1, idx2);
+                                                if (!isAcyclic(relationsGraph))
+                                                {
+                                                    MessageBox.Show("powstał cykl", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                    relationsGraph.RemoveEdge(idx1, idx2);
+                                                }
+                                                else
+                                                {
+                                                    relationsDict[chosenRelation].Add(result.Item3);
+                                                    sortRelations();
+                                                    result.Item3.relations.Add(chosenRelation);
+                                                    result.Item3.relations.Sort();
+                                                }
                                             }
                                         }
                                     }
@@ -1025,20 +1032,42 @@ namespace polygon_editor
                         MyPoint p3 = relationsDict[relation][1];
                         MyPoint p4 = polygon[(polygon.IndexOf(p3) + 1) % polygon.Count];
 
+                        double len = getDistance(p3.x, p3.y, p4.x, p4.y);
+
                         if (p1.x == p2.x)
                         {
                             Debug.WriteLine($"first {rnd.Next()}");
                             p4.y = p3.y;
+                        }
+                        else if (p1.y == p2.y)
+                        {
+                            p4.x = p3.x;
                         }
                         else
                         {
                             double a1 = (double)(p1.y - p2.y) / (double)(p1.x - p2.x);
                             double a2 = -1.0 / a1;
                             double b = p3.y - a2 * p3.x;
-                            p4.y = (int)(a2 * p4.x + b);
+                            if (Math.Abs(p4.x - p3.x) < Math.Abs(p4.y - p3.y))
+                            {
+                                p4.x = (int)((p4.y - b) / a2);
+                            }
+                            else
+                            {
+                                p4.y = (int)(a2 * p4.x + b);
+                            }
                             Debug.WriteLine($"p3 rel: {relation}, coord: {p3.x}, {p3.y}");
                             Debug.WriteLine($"p4 rel: {relation}, coord: {p4.x}, {p4.y}");
                         }
+
+                        double newLen = getDistance(p3.x, p3.y, p4.x, p4.y);
+                        double scale = len / newLen;
+                        double lengthX = p4.x - p3.x;
+                        double lengthY = p4.y - p3.y;
+                        lengthX *= scale;
+                        lengthY *= scale;
+                        p4.x = (int)(p3.x + lengthX);
+                        p4.y = (int)(p3.y + lengthY);
 
                     }
                     if (polygon[newIdx].length != -1.0)
@@ -1058,7 +1087,39 @@ namespace polygon_editor
             }
         }
 
-        bool checkIfCanAddNewLength(List<MyPoint> polygon)
+        //bool checkIfCanAddNewLength(List<MyPoint> polygon)
+        //{
+        //    int counter = 0;
+        //    for (int i = 0; i < polygon.Count; i++)
+        //    {
+        //        if (polygon[i].length != -1.0)
+        //        {
+        //            counter++;
+        //        }
+        //    }
+        //    if (counter == polygon.Count - 1) return false;
+        //    return true;
+        //}
+
+        //bool checkIfCanAddNewRelation(List<MyPoint> polygon)
+        //{
+        //    int counter = 0;
+        //    for (int i = 0; i < polygon.Count; i++)
+        //    {
+        //        foreach (var val in relationsDict.Values)
+        //        {
+        //            if (val.Contains(polygon[i]))
+        //            {
+        //                counter++;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    if (counter == polygon.Count - 1) return false;
+        //    return true;
+        //}
+
+        bool checkIfCanAddNewLimit(List<MyPoint> polygon)
         {
             int counter = 0;
             for (int i = 0; i < polygon.Count; i++)
@@ -1066,17 +1127,8 @@ namespace polygon_editor
                 if (polygon[i].length != -1.0)
                 {
                     counter++;
+                    continue;
                 }
-            }
-            if (counter == polygon.Count - 1) return false;
-            return true;
-        }
-
-        bool checkIfCanAddNewRelation(List<MyPoint> polygon)
-        {
-            int counter = 0;
-            for (int i = 0; i < polygon.Count; i++)
-            {
                 foreach (var val in relationsDict.Values)
                 {
                     if (val.Contains(polygon[i]))
@@ -1088,6 +1140,19 @@ namespace polygon_editor
             }
             if (counter == polygon.Count - 1) return false;
             return true;
+        }
+
+        bool checkIfCanAddRelation(int relation, MyPoint point)
+        {
+            bool isSecond = false;
+            foreach (var rel in point.relations)
+            {
+                if (relationsDict[rel].Count == 2 && relationsDict[rel][1] == point)
+                {
+                    isSecond = true;
+                }
+            }
+            return !isSecond;
         }
 
         public bool isAcyclic(Graph g)
@@ -1301,6 +1366,7 @@ namespace polygon_editor
 
             relationsDict.Add(1, rel2);
 
+            sortRelations();
             createNewGraph();
             correctPointByLength(null);
 
