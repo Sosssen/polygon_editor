@@ -10,53 +10,48 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using ASD.Graphs;
 
-// TODO: predefined canva with 2 polygons
-// TODO: maybe button to create new, plain canva?
-// TODO: check if there are no more than n - 1 limits
 
 namespace polygon_editor
 {
     public partial class polygon_editor : Form
     {
-        Random rnd = new Random();
-        // TODO: chosen -> selected
+        int errorCounter = 0;
         public static double edgeLength = 0;
         public static bool edgeLengthChanged = false;
-        public static MyPoint chosenPointRel = null;
-        public static int chosenRelation = -1;
-        public static Dictionary<int, List<MyPoint>> relationsDict = new Dictionary<int, List<MyPoint>>();
+        public static MyPoint selectedPointRel = null;
+        public static int selectedRelation = -1;
+        public static Dictionary<int, List<MyPoint>> relationsDict = new();
         Graph relationsGraph = null;
 
         private Bitmap drawArea;
-        private Pen pen = new Pen(Color.Black, 1);
-        private Pen redPen = new Pen(Color.Red, 6);
-        private SolidBrush sbBlack = new SolidBrush(Color.Black);
-        private SolidBrush sbRed = new SolidBrush(Color.Red);
-        private SolidBrush sbGreen = new SolidBrush(Color.Green);
+        private readonly Pen pen = new(Color.Black, 1);
+        private readonly Pen redPen = new(Color.Red, 6);
+        private readonly SolidBrush sbBlack = new(Color.Black);
+        private readonly SolidBrush sbRed = new(Color.Red);
+        private readonly SolidBrush sbGreen = new(Color.Green);
 
         private int chosenButton;
 
-        private List<MyPoint> points = new List<MyPoint>();
-        public static List<List<MyPoint>> polygons = new List<List<MyPoint>>();
+        private List<MyPoint> points = new();
+        public static List<List<MyPoint>> polygons = new();
 
         private const int radius = 4;
 
         private bool colorPoint = false;
-        private MyPoint pointToColor = new MyPoint();
+        private MyPoint pointToColor = new();
 
         private bool colorEdge = false;
-        private MyPoint edgeToColor = new MyPoint();
+        private MyPoint edgeToColor = new();
 
         private bool colorPolygon = false;
         private List<MyPoint> polygonToColor = null;
 
-        // 0 - nothing, 1 - point, 2 - edge, 3 - polygon
         private int moving = 0;
         private (int, int) pointToMove;
         private (int, int) edgeToMove;
-        private MyPoint startingPoint = new MyPoint();
-        private MyPoint startingPointA = new MyPoint();
-        private MyPoint startingPointB = new MyPoint();
+        private MyPoint startingPoint = new();
+        private MyPoint startingPointA = new();
+        private MyPoint startingPointB = new();
         private List<MyPoint> polygonToMove = null;
         private List<MyPoint> polygonToMoveCopy = null;
 
@@ -72,7 +67,6 @@ namespace polygon_editor
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
-            // doing this to fix bug with scaling in Windows xddd
             Rectangle screen = Screen.PrimaryScreen.WorkingArea;
             int w = (int)(screen.Width / 1.5);
             int h = (int)(screen.Height / 1.5);
@@ -105,8 +99,6 @@ namespace polygon_editor
                 MessageBox.Show("Turn off rendering with Bresenham's algorithm", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Debug.WriteLine($"Mouse: {e.X}, {e.Y}");
-            // TODO: change this!
             colorPoint = false;
             colorEdge = false;
             colorPolygon = false;
@@ -145,7 +137,6 @@ namespace polygon_editor
                     points = new List<MyPoint>();
                 }
             }
-            // TODO: what to do if polygon was not finished
             else if (chosenButton == 2)
             {
                 if (e.Button == MouseButtons.Left)
@@ -190,7 +181,6 @@ namespace polygon_editor
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    // TODO: name result items for readability?
                     var result = FindPointInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
@@ -274,7 +264,6 @@ namespace polygon_editor
                     {
                         MyPoint p1 = result.Item3;
                         MyPoint p2 = result.Item4;
-                        // TODO: change result to p1,p2...
                         edgeLength = getDistance(p1.x, p1.y, p2.x, p2.y);
                         Form2 form = new Form2();
                         form.StartPosition = FormStartPosition.CenterParent;
@@ -285,14 +274,13 @@ namespace polygon_editor
                             if (checkIfCanAddNewLimit(result.Item2))
                             {
                                 result.Item3.length = edgeLength;
-                                correctPointByLength(null);
+                                correctPointByLength();
                             }
                             else
                             {
                                 MessageBox.Show("Too many limits", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
-                        // TODO: maybe better precision?
 
                     }
                 }
@@ -312,47 +300,46 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        chosenPointRel = result.Item3;
+                        selectedPointRel = result.Item3;
 
                         Form3 form = new Form3();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
 
-                        // TODO: can't add more than 2 edges to 1 relation
-                        if (chosenRelation != -1)
+                        if (selectedRelation != -1)
                         {
                             if (checkIfCanAddNewLimit(result.Item2) || result.Item3.relations.Count > 0)
                             {
 
 
-                                if (!relationsDict.ContainsKey(chosenRelation))
+                                if (!relationsDict.ContainsKey(selectedRelation))
                                 {
-                                    relationsDict.Add(chosenRelation, new List<MyPoint>());
-                                    relationsDict[chosenRelation].Add(result.Item3);
-                                    result.Item3.relations.Add(chosenRelation);
+                                    relationsDict.Add(selectedRelation, new List<MyPoint>());
+                                    relationsDict[selectedRelation].Add(result.Item3);
+                                    result.Item3.relations.Add(selectedRelation);
                                 }
                                 else
                                 {
-                                    if (relationsDict[chosenRelation].Contains(result.Item3))
+                                    if (relationsDict[selectedRelation].Contains(result.Item3))
                                     {
                                         MessageBox.Show("This relation already exists on this edge", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                     else
                                     {
-                                        if (relationsDict[chosenRelation].Count == 2)
+                                        if (relationsDict[selectedRelation].Count == 2)
                                         {
                                             MessageBox.Show("There are 2 edges in this relation already", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         }
                                         else
                                         {
-                                            if (!checkIfCanAddRelation(chosenRelation, result.Item3))
+                                            if (!checkIfCanAddRelation(selectedRelation, result.Item3))
                                             {
                                                 MessageBox.Show("You can't add this relation to this edge", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
                                             else
                                             {
                                                 createNewGraph();
-                                                int idx1 = relationsDict[chosenRelation][0].countIndex();
+                                                int idx1 = relationsDict[selectedRelation][0].countIndex();
                                                 int idx2 = result.Item3.countIndex();
                                                 relationsGraph.AddEdge(idx1, idx2);
                                                 if (!isAcyclic(relationsGraph))
@@ -362,9 +349,9 @@ namespace polygon_editor
                                                 }
                                                 else
                                                 {
-                                                    relationsDict[chosenRelation].Add(result.Item3);
+                                                    relationsDict[selectedRelation].Add(result.Item3);
                                                     sortRelations();
-                                                    result.Item3.relations.Add(chosenRelation);
+                                                    result.Item3.relations.Add(selectedRelation);
                                                     result.Item3.relations.Sort();
                                                 }
                                             }
@@ -376,13 +363,11 @@ namespace polygon_editor
                             {
                                 MessageBox.Show("Too many limits", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
-                            // relationsDict[chosenRelation].Add(result.Item3);
                         }
-                        correctPointByLength(result.Item2);
+                        correctPointByLength();
                     }
                     
                 }
-                printRelations();
             }
             else if (chosenButton == 6)
             {
@@ -391,46 +376,29 @@ namespace polygon_editor
                     var result = FindEdgeInPolygons(e.X, e.Y);
                     if (result.Item1)
                     {
-                        chosenPointRel = result.Item3;
+                        selectedPointRel = result.Item3;
 
                         Form4 form = new Form4();
                         form.StartPosition = FormStartPosition.CenterParent;
                         form.ShowDialog();
 
-                        if (chosenRelation != -1)
+                        if (selectedRelation != -1)
                         {
-                            result.Item3.relations.Remove(chosenRelation);
-                            relationsDict[chosenRelation].Remove(result.Item3);
-                            if (relationsDict[chosenRelation].Count == 0)
+                            result.Item3.relations.Remove(selectedRelation);
+                            relationsDict[selectedRelation].Remove(result.Item3);
+                            if (relationsDict[selectedRelation].Count == 0)
                             {
-                                relationsDict.Remove(chosenRelation);
+                                relationsDict.Remove(selectedRelation);
                             }
                         }
                     }
                 }
-                correctPointByLength(null);
-                printRelations();
+                correctPointByLength();
             }
 
 
             DrawCanvas(e.X, e.Y);
 
-        }
-
-        void printRelations()
-        {
-
-            foreach (var key in relationsDict.Keys)
-            {
-                if (relationsDict[key].Count == 1)
-                {
-                    Debug.WriteLine($"key:{key}, idx:{relationsDict[key][0].index}");
-                }
-                else
-                {
-                    Debug.WriteLine($"key:{key}, idx1:{relationsDict[key][0].index}, idx2:{relationsDict[key][1].index}");
-                }
-            }
         }
 
         private (bool, MyPoint) FindPointInPoints(int mouseX, int mouseY)
@@ -483,7 +451,6 @@ namespace polygon_editor
 
                     using (Graphics g = Graphics.FromImage(drawArea))
                     {
-                        // draw all poygons
                         foreach (var polygon in polygons)
                         {
                             MyPoint[] arr = polygon.ToArray();
@@ -545,7 +512,6 @@ namespace polygon_editor
                     }
                     using (Graphics g = Graphics.FromImage(drawArea))
                     {
-                        // connect all points that are not yet in any polygon
                         for (int i = 0; i < points.Count - 1; i++)
                         {
                             g.DrawLine(pen, points[i], points[i + 1]);
@@ -564,7 +530,6 @@ namespace polygon_editor
                             }
 
                         }
-                        // draw line to mouse while creating new polygon
                         if (chosenButton == 1 && points.Count != 0) g.DrawLine(pen, points[points.Count - 1], new MyPoint(mouseX, mouseY));
                     }
                     using (Graphics g = Graphics.FromImage(drawArea))
@@ -582,7 +547,6 @@ namespace polygon_editor
                                         text += number.ToString();
                                         text += " ";
                                     }
-                                    // text = text.Substring(0, text.Length - 1);
 
                                 }
                                 if (polygon[i].length != -1.0)
@@ -590,8 +554,6 @@ namespace polygon_editor
                                     text += "len. = ";
                                     text += polygon[i].length.ToString();
                                 }
-                                //text += " idx: ";
-                                //text += polygon[i].countIndex().ToString();
                                 Point middle = new Point((polygon[i].x + polygon[(i + 1) % polygon.Count].x) / 2, (polygon[i].y + polygon[(i + 1) % polygon.Count].y) / 2);
                                 using (Font font1 = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point))
                                 {
@@ -605,20 +567,24 @@ namespace polygon_editor
                     }
                 }
             }
-            catch(OverflowException e)
+            catch
             {
-                MessageBox.Show("Node is too far from canva", e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Node is too far from canva", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                errorCounter++;
+                if (errorCounter >= 5)
+                {
+                    MessageBox.Show("Can't repair this state, app is gonna close", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                }
                 polygons[pointToMove.Item1][pointToMove.Item2].x = mouseX;
                 polygons[pointToMove.Item1][pointToMove.Item2].y = mouseY;
-                correctPointByLength(polygons[pointToMove.Item1]);
+                correctPointByLength();
                 moving = 0;
             }
         }
 
-        // TODO: change buttons to list and change indexing from 0 not from 1
         private void CREATE_Click(object sender, EventArgs e)
         {
-            // 
             CREATE.BackColor = Color.LightBlue;
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;
@@ -628,7 +594,6 @@ namespace polygon_editor
             chosenButton = 1;
         }
 
-        // TODO: clearing points in every function, maybe clear it elsewhere?
         private void MODIFY_Click(object sender, EventArgs e)
         {
             CREATE.BackColor = SystemColors.Control;
@@ -726,7 +691,6 @@ namespace polygon_editor
                         colorPolygon = false;
                         pointToColor = result.Item3;
                     }
-                    // TODO: when moving point/edge it shouldn't be colored anymore
                     else
                     {
                         var result2 = FindEdgeInPolygons(e.X, e.Y);
@@ -761,7 +725,7 @@ namespace polygon_editor
                     MyPoint p = polygons[pointToMove.Item1][pointToMove.Item2];
                     p.x = e.X;
                     p.y = e.Y;
-                    correctPointByLength(null);
+                    correctPointByLength();
                 }
                 else if (moving == 2)
                 {
@@ -777,11 +741,10 @@ namespace polygon_editor
                     polygons[edgeToMove.Item1][edgeToMove.Item2].y = a.y;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].x = b.x;
                     polygons[edgeToMove.Item1][(edgeToMove.Item2 + 1) % polygons[edgeToMove.Item1].Count].y = b.y;
-                    correctPointByLength(polygons[edgeToMove.Item1]);
+                    correctPointByLength();
                 }
                 else if (moving == 3)
                 {
-                    // TODO: maybe foreach and changing fields of var point?
                     for (int i = 0; i < polygonToMove.Count; i++)
                     {
                         int diffX = startingPoint.x - e.X;
@@ -792,7 +755,7 @@ namespace polygon_editor
                         polygonToMove[i].x = temp.x;
                         polygonToMove[i].y = temp.y;
                     }
-                    correctPointByLength(polygonToMove);
+                    correctPointByLength();
                 }
             }
             else if (chosenButton == 3)
@@ -876,7 +839,6 @@ namespace polygon_editor
         {
             foreach (var polygon in polygons)
             {
-                // TODO: find better way (more accurate) to calculate this
                 for (int i = 0; i < polygon.Count; i++)
                 {
                     MyPoint A = polygon[i];
@@ -914,61 +876,33 @@ namespace polygon_editor
             return (false, null);
         }
 
-        int areIntersecting(
-    float v1x1, float v1y1, float v1x2, float v1y2,
-    float v2x1, float v2y1, float v2x2, float v2y2
-)
+        int areIntersecting(float v1x1, float v1y1, float v1x2, float v1y2, float v2x1, float v2y1, float v2x2, float v2y2)
         {
             float d1, d2;
             float a1, a2, b1, b2, c1, c2;
 
-            // Convert vector 1 to a line (line 1) of infinite length.
-            // We want the line in linear equation standard form: A*x + B*y + C = 0
-            // See: http://en.wikipedia.org/wiki/Linear_equation
             a1 = v1y2 - v1y1;
             b1 = v1x1 - v1x2;
             c1 = (v1x2 * v1y1) - (v1x1 * v1y2);
 
-            // Every point (x,y), that solves the equation above, is on the line,
-            // every point that does not solve it, is not. The equation will have a
-            // positive result if it is on one side of the line and a negative one 
-            // if is on the other side of it. We insert (x1,y1) and (x2,y2) of vector
-            // 2 into the equation above.
             d1 = (a1 * v2x1) + (b1 * v2y1) + c1;
             d2 = (a1 * v2x2) + (b1 * v2y2) + c1;
 
-            // If d1 and d2 both have the same sign, they are both on the same side
-            // of our line 1 and in that case no intersection is possible. Careful, 
-            // 0 is a special case, that's why we don't test ">=" and "<=", 
-            // but "<" and ">".
             if (d1 > 0 && d2 > 0) return 0;
             if (d1 < 0 && d2 < 0) return 0;
 
-            // The fact that vector 2 intersected the infinite line 1 above doesn't 
-            // mean it also intersects the vector 1. Vector 1 is only a subset of that
-            // infinite line 1, so it may have intersected that line before the vector
-            // started or after it ended. To know for sure, we have to repeat the
-            // the same test the other way round. We start by calculating the 
-            // infinite line 2 in linear equation standard form.
             a2 = v2y2 - v2y1;
             b2 = v2x1 - v2x2;
             c2 = (v2x2 * v2y1) - (v2x1 * v2y2);
 
-            // Calculate d1 and d2 again, this time using points of vector 1.
             d1 = (a2 * v1x1) + (b2 * v1y1) + c2;
             d2 = (a2 * v1x2) + (b2 * v1y2) + c2;
 
-            // Again, if both have the same sign (and neither one is 0),
-            // no intersection is possible.
             if (d1 > 0 && d2 > 0) return 0;
             if (d1 < 0 && d2 < 0) return 0;
 
-            // If we get here, only two possibilities are left. Either the two
-            // vectors intersect in exactly one point or they are collinear, which
-            // means they intersect in any number of points from zero to infinite.
             if ((a1 * b2) - (a2 * b1) == 0.0f) return 2;
 
-            // If they are not collinear, they must intersect in exactly one point.
             return 1;
         }
 
@@ -981,13 +915,11 @@ namespace polygon_editor
                     MyPoint temp = relationsDict[key][0];
                     relationsDict[key][0] = relationsDict[key][1];
                     relationsDict[key][1] = temp;
-                    Debug.WriteLine("sorted");
                 }
             }
         }
 
-        // TODO: no arguments there
-        void correctPointByLength(List<MyPoint> jkasdbf)
+        void correctPointByLength()
         {
             int max = 0;
             foreach (var key in relationsDict.Keys)
@@ -1017,7 +949,6 @@ namespace polygon_editor
                     if (mark) continue;
                     break;
                 }
-                Debug.WriteLine($"starting index:{idx}");
                 for (int i = 0; i < polygon.Count; i++)
                 {
                     int newIdx = (idx + 1 + i) % polygon.Count;
@@ -1025,7 +956,6 @@ namespace polygon_editor
                     {
                         relations[relation]++;
                         if (relations[relation] == 1) continue;
-                        Debug.WriteLine($"wchodze, relacja {relation}, punkt: {polygon[newIdx].x}, {polygon[newIdx].y}");
                         MyPoint p1 = relationsDict[relation][0];
                         List<MyPoint> polygonWithP1 = null;
                         foreach (var p in polygons)
@@ -1044,7 +974,6 @@ namespace polygon_editor
 
                         if (p1.x == p2.x)
                         {
-                            Debug.WriteLine($"first {rnd.Next()}");
                             p4.y = p3.y;
                         }
                         else if (p1.y == p2.y)
@@ -1064,8 +993,6 @@ namespace polygon_editor
                             {
                                 p4.y = (int)(a2 * p4.x + b);
                             }
-                            Debug.WriteLine($"p3 rel: {relation}, coord: {p3.x}, {p3.y}");
-                            Debug.WriteLine($"p4 rel: {relation}, coord: {p4.x}, {p4.y}");
                         }
 
                         double newLen = getDistance(p3.x, p3.y, p4.x, p4.y);
@@ -1080,7 +1007,6 @@ namespace polygon_editor
                     }
                     if (polygon[newIdx].length != -1.0)
                     {
-                        Debug.WriteLine($"poprawiam długość dla {newIdx}, {newIdx + 1} na wartość {polygon[newIdx].length}");
                         MyPoint p = polygon[(newIdx + 1) % polygon.Count];
                         double dist = getDistance(polygon[newIdx].x, polygon[newIdx].y, p.x, p.y);
                         double scale = polygon[newIdx].length / dist;
@@ -1094,38 +1020,6 @@ namespace polygon_editor
                 }
             }
         }
-
-        //bool checkIfCanAddNewLength(List<MyPoint> polygon)
-        //{
-        //    int counter = 0;
-        //    for (int i = 0; i < polygon.Count; i++)
-        //    {
-        //        if (polygon[i].length != -1.0)
-        //        {
-        //            counter++;
-        //        }
-        //    }
-        //    if (counter == polygon.Count - 1) return false;
-        //    return true;
-        //}
-
-        //bool checkIfCanAddNewRelation(List<MyPoint> polygon)
-        //{
-        //    int counter = 0;
-        //    for (int i = 0; i < polygon.Count; i++)
-        //    {
-        //        foreach (var val in relationsDict.Values)
-        //        {
-        //            if (val.Contains(polygon[i]))
-        //            {
-        //                counter++;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //    if (counter == polygon.Count - 1) return false;
-        //    return true;
-        //}
 
         bool checkIfCanAddNewLimit(List<MyPoint> polygon)
         {
@@ -1210,7 +1104,6 @@ namespace polygon_editor
 
         public class MyPoint
         {
-            // TODO: change to setters?
             public int x;
             public int y;
             public int index = -1;
@@ -1282,7 +1175,6 @@ namespace polygon_editor
             public static implicit operator Point(MyPoint p) => new Point(p.x, p.y);
         }
 
-        // TODO: new graph when deleting vertex
         void createNewGraph()
         {
             int counter = 0;
@@ -1386,7 +1278,7 @@ namespace polygon_editor
 
             sortRelations();
             createNewGraph();
-            correctPointByLength(null);
+            correctPointByLength();
 
             DrawCanvas();
         }
@@ -1406,7 +1298,6 @@ namespace polygon_editor
                 BRESENHAM.Checked = true;
                 isChecked = false;
             }
-            // Debug.WriteLine($"{isChecked}");
             CREATE.BackColor = SystemColors.Control;
             MODIFY.BackColor = SystemColors.Control;
             MIDDLE_INSERT.BackColor = SystemColors.Control;

@@ -39,13 +39,13 @@ namespace polygon_editor
 
         private void APPLY_Click(object sender, EventArgs e)
         {
-            polygon_editor.chosenRelation = Convert.ToInt32(domainUpDown1.SelectedItem);
+            polygon_editor.selectedRelation = Convert.ToInt32(domainUpDown1.SelectedItem);
             this.Close();
         }
 
         private void CANCEL_Click(object sender, EventArgs e)
         {
-            polygon_editor.chosenRelation = -1;
+            polygon_editor.selectedRelation = -1;
             this.Close();
         }
     }
