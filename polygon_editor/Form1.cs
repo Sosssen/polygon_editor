@@ -1144,15 +1144,25 @@ namespace polygon_editor
 
         bool checkIfCanAddRelation(int relation, MyPoint point)
         {
-            bool isSecond = false;
-            foreach (var rel in point.relations)
+            var point2 = relationsDict[relation][0];
+            int counter1 = 0;
+            int counter2 = 0;
+            relationsDict[relation].Add(point);
+            sortRelations();
+            foreach (var key in relationsDict.Keys)
             {
-                if (relationsDict[rel].Count == 2 && relationsDict[rel][1] == point)
+                if (relationsDict[key].Count == 2 && relationsDict[key][1] == point)
                 {
-                    isSecond = true;
+                    counter1++;
+                }
+                else if(relationsDict[key].Count == 2 && relationsDict[key][1] == point2)
+                {
+                    counter2++;
                 }
             }
-            return !isSecond;
+            relationsDict[relation].Remove(point);
+            if (counter1 > 1 || counter2 > 1) return false;
+            return true;
         }
 
         public bool isAcyclic(Graph g)
